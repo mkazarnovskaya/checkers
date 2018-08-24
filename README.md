@@ -1,0 +1,2 @@
+# checkers
+Russian checkers
