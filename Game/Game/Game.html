@@ -9,6 +9,50 @@
 	<script src="Scripts/jquery-3.0.0.min.js"></script>
 	<script src="Scripts/umd/popper.min.js"></script>
 	<script src="Scripts/bootstrap.min.js"></script>
+	<script src="Scripts/checkers/primitives.js"></script>
+	<script src="Scripts/checkers/position.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$.ajax({
+				url: "./TrainedModels/model_12.json",
+				success: function (data) {
+					startGame(false);
+				}
+			});
+		});
+
+		var currentPosition;
+		function startGame(blackPlayer) {
+			currentPosition = new Checkers.Position();
+			currentPosition.initialize();
+			//if (blackPlayer) -> make move
+			updateDesk();
+		}
+
+		function updateDesk() {
+			let pieceClasses = ["contains_black_simple", "contains_black_king", "contains_white_simple", "contains_white_king"];
+			for (let row = 0; row < 8; ++row) {
+				for (let col = 0; col < 4; ++col) {
+					let cellId = "cell_" + row + "_" + col;
+					var cell = $("#" + cellId);
+					pieceClasses.forEach(function (className) {
+						cell.removeClass(className);
+					});
+					let cellIndex = new Checkers.CellIndex(row, col);
+					let cellValue = currentPosition.getPiece(cellIndex);
+					if (cellValue === Checkers.CellValue.BlackSimple)
+						cell.addClass("contains_black_simple");
+					else if (cellValue === Checkers.CellValue.BlackKing)
+						cell.addClass("contains_black_king");
+					else if (cellValue === Checkers.CellValue.WhiteSimple)
+						cell.addClass("contains_white_simple");
+					else if (cellValue === Checkers.CellValue.WhiteKing)
+						cell.addClass("contains_white_king");
+				}
+			}
+		}
+
+	</script>
 </head>
 <body class="bg-secondary">
 	<nav class="navbar navbar-expand bg-dark navbar-dark small">
@@ -32,82 +76,82 @@
 				<div class="container">
 					<div class="row">
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_7_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_7_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_7_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_7_3" class="col black-cell"></div>
 					</div>
 					<div class="row">
-						<div class="col black-cell"></div>
+						<div id="cell_6_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_6_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_6_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-					</div>
-					<div class="row">
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-					</div>
-					<div class="row">
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_6_3" class="col black-cell"></div>
 						<div class="col bg-light"></div>
 					</div>
 					<div class="row">
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_5_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_5_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_5_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_5_3" class="col black-cell"></div>
 					</div>
 					<div class="row">
-						<div class="col black-cell"></div>
+						<div id="cell_4_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_4_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_4_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_4_3" class="col black-cell"></div>
 						<div class="col bg-light"></div>
 					</div>
 					<div class="row">
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_3_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_3_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_3_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_3_3" class="col black-cell"></div>
 					</div>
 					<div class="row">
-						<div class="col black-cell"></div>
+						<div id="cell_2_0" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_2_1" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_2_2" class="col black-cell"></div>
 						<div class="col bg-light"></div>
-						<div class="col black-cell"></div>
+						<div id="cell_2_3" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+					</div>
+					<div class="row">
+						<div class="col bg-light"></div>
+						<div id="cell_1_0" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_1_1" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_1_2" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_1_3" class="col black-cell"></div>
+					</div>
+					<div class="row">
+						<div id="cell_0_0" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_0_1" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_0_2" class="col black-cell"></div>
+						<div class="col bg-light"></div>
+						<div id="cell_0_3" class="col black-cell"></div>
 						<div class="col bg-light"></div>
 					</div>
 				</div>

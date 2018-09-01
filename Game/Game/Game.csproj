@@ -77,6 +77,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\game.css" />
     <Content Include="game.html" />
+    <Content Include="Images\black_king.gif" />
+    <Content Include="Images\black_simple.gif" />
+    <Content Include="Images\white_king.gif" />
+    <Content Include="Images\white_simple.gif" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -130,6 +134,8 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.0.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.0.0.min.map" />
+    <Content Include="TrainedModels\model_12.json" />
+    <Content Include="Scripts\checkers\tsconfig.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -139,10 +145,13 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\primitives.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\position.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

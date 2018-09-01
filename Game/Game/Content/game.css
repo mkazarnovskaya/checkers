@@ -2,3 +2,23 @@
 	padding-top: 12%;
 	background-color: #683725;
 }
+
+.contains_black_simple {
+	background-image: url(../Images/black_simple.gif);
+	background-size: 100% auto;
+}
+
+.contains_black_king {
+	background-image: url(../Images/black_king.gif);
+	background-size: 100% auto;
+}
+
+.contains_white_simple {
+	background-image: url(../Images/white_simple.gif);
+	background-size: 100% auto;
+}
+
+.contains_white_king {
+	background-image: url(../Images/white_king.gif);
+	background-size: 100% auto;
+}
