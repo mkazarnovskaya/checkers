@@ -4,16 +4,19 @@
 		Occupied = 0b001,
 		Black = 0b010,
 		King = 0xb100,
-		WhiteSimple = 0b001,
-		BlackSimple = 0b011,
-		WhiteKing = 0b101,
-		BlackKing = 0b111,
 	}
 
 	export enum Direction {
 		Up = 0b01,
 		Right = 0b10,
 	}
+
+	export let ALL_MOVE_DIRECTIONS: Direction[] = [Direction.Up | Direction.Right, Direction.Up, 0b00, Direction.Right];
+
+	export let WHITE_SIMPLE = CellValue.Occupied;
+	export let WHITE_KING = CellValue.Occupied | CellValue.King;
+	export let BLACK_SIMPLE = CellValue.Occupied | CellValue.Black;
+	export let BLACK_KING = CellValue.Occupied | CellValue.Black | CellValue.King;
 
 	export class CellIndex {
 		row: number;

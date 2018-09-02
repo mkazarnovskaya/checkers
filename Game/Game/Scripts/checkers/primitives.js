@@ -6,16 +6,17 @@ var Checkers;
         CellValue[CellValue["Occupied"] = 1] = "Occupied";
         CellValue[CellValue["Black"] = 2] = "Black";
         CellValue[CellValue["King"] = 45312] = "King";
-        CellValue[CellValue["WhiteSimple"] = 1] = "WhiteSimple";
-        CellValue[CellValue["BlackSimple"] = 3] = "BlackSimple";
-        CellValue[CellValue["WhiteKing"] = 5] = "WhiteKing";
-        CellValue[CellValue["BlackKing"] = 7] = "BlackKing";
     })(CellValue = Checkers.CellValue || (Checkers.CellValue = {}));
     var Direction;
     (function (Direction) {
         Direction[Direction["Up"] = 1] = "Up";
         Direction[Direction["Right"] = 2] = "Right";
     })(Direction = Checkers.Direction || (Checkers.Direction = {}));
+    Checkers.ALL_MOVE_DIRECTIONS = [Direction.Up | Direction.Right, Direction.Up, 0, Direction.Right];
+    Checkers.WHITE_SIMPLE = CellValue.Occupied;
+    Checkers.WHITE_KING = CellValue.Occupied | CellValue.King;
+    Checkers.BLACK_SIMPLE = CellValue.Occupied | CellValue.Black;
+    Checkers.BLACK_KING = CellValue.Occupied | CellValue.Black | CellValue.King;
     var CellIndex = /** @class */ (function () {
         function CellIndex(row, col) {
             this.row = row;

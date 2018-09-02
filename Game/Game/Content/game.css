@@ -3,22 +3,37 @@
 	background-color: #683725;
 }
 
-.contains_black_simple {
+.contains-black-simple {
 	background-image: url(../Images/black_simple.gif);
 	background-size: 100% auto;
 }
 
-.contains_black_king {
+.contains-black-king {
 	background-image: url(../Images/black_king.gif);
 	background-size: 100% auto;
 }
 
-.contains_white_simple {
+.contains-white-simple {
 	background-image: url(../Images/white_simple.gif);
 	background-size: 100% auto;
 }
 
-.contains_white_king {
+.contains-white-king {
 	background-image: url(../Images/white_king.gif);
 	background-size: 100% auto;
+}
+
+.contains-movable-piece {
+	cursor: grab;
+}
+
+.selected-for-move {
+	border-color: coral;
+	border-style: solid;
+}
+
+.possible-move-target {
+	border-color: forestgreen;
+	border-style: solid ;
+	cursor: grab;
 }
