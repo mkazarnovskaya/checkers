@@ -14,22 +14,35 @@
 	<script src="Scripts/checkers/move.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function () {
+			$(".black-cell").click(function () {
+				var cellIndex = getCellIndexByCellId(this.id);
+				if ($(this).hasClass("contains-movable-piece")) {
+					$(".selected-for-move").removeClass("selected-for-move");
+					$(".possible-move-target").removeClass("possible-move-target");
+					$(this).addClass("selected-for-move");
+					var cellIndex = getCellIndexByCellId(this.id);
+					var possibleMoves = _currentPosition.findMovesFromCell(cellIndex);
+					possibleMoves.forEach(function (move) {
+						let targetCellIndex = move.getLastTargetCell();
+						let targetCell = getCellByCellIndex(targetCellIndex);
+						targetCell.addClass("possible-move-target");
+					});
+				}
+				else if ($(this).hasClass("possible-move-target")) {
+					var startCell = getCellIndexByCellId($(".selected-for-move").attr("id"));
+					var selectedMove = _currentPosition.findMovesFromCell(startCell).filter(m => {
+						var targetCell = m.getLastTargetCell();
+						return (targetCell.row == cellIndex.row && targetCell.col == cellIndex.col);
+					})[0];
+					_currentPosition = selectedMove.end;
+					updateDesk();
+				}
+			});
+
 			$.ajax({
 				url: "./TrainedModels/model_12.json",
 				success: function (data) {
 					startGame(false);
-					$(".contains-movable-piece").click(function () {
-						$(".selected-for-move").removeClass("selected-for-move");
-						$(".possible-move-target").removeClass("possible-move-target");
-						$(this).addClass("selected-for-move");
-						var cellIndex = getCellIndexByCellId(this.id);
-						var possibleMoves = _currentPosition.findMovesFromCell(cellIndex);
-						possibleMoves.forEach(function (move) {
-							let targetCellIndex = move.getLastTargetCell();
-							let targetCell = getCellByCellIndex(targetCellIndex);
-							targetCell.addClass("possible-move-target");
-						});
-					});
 				}
 			});
 		});
