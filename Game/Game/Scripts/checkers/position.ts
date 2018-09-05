@@ -110,7 +110,7 @@
 
 		findMoveSteps(from: CellIndex, shouldCapture = false, beatFromDir?: Direction): MoveStep[] {
 			let steps = new Array<MoveStep>()
-			if (beatFromDir)
+			if (beatFromDir != null)
 				shouldCapture = true;
 			let fromValue = this.getCellValue(from);
 
@@ -124,7 +124,7 @@
 				else
 					dirSteps = this.findMoveStepsByDirectionSimple(from, dir, shouldCapture);
 
-				if (steps.length > 0 && steps[0].capturedCell && !shouldCapture) {
+				if (dirSteps.length > 0 && dirSteps[0].capturedCell && !shouldCapture) {
 					shouldCapture = true;
 					steps = steps.filter((step) => (step.capturedCell))
 				}
@@ -140,13 +140,12 @@
 			while (notCompletedMoves.length > 0) {
 				let move = notCompletedMoves.pop();
 				let lastStep = move.lastStep()
-				let captureFromDir = lastStep.captureFrom();
-				if (!captureFromDir) {
+				if (!lastStep.capturedCell) {
 					move.end.blackPlayer = !move.end.blackPlayer;
 					completedMoves.push(move);
 					continue;
 				}
-				var nextSteps = move.end.findMoveSteps(lastStep.to, true, captureFromDir);
+				var nextSteps = move.end.findMoveSteps(lastStep.to, true, lastStep.captureFrom());
 				if (nextSteps.length == 0) {
 					move.end.blackPlayer = !move.end.blackPlayer;
 					completedMoves.push(move);

@@ -12,7 +12,7 @@ var Checkers;
                 return null;
             var result = 0;
             if (this.from.row > this.to.row)
-                result |= 1;
+                result |= Checkers.Direction.Up;
             var colFrom = this.from.col;
             if ((this.from.row & 1) == 1)
                 colFrom++;
@@ -20,7 +20,7 @@ var Checkers;
             if ((this.to.row & 1) == 1)
                 colTo++;
             if (colFrom < colTo)
-                result |= 2;
+                result |= Checkers.Direction.Right;
             return result;
         };
         MoveStep.prototype.toMove = function (startPosition) {

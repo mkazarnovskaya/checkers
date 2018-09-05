@@ -100,7 +100,7 @@ var Checkers;
         Position.prototype.findMoveSteps = function (from, shouldCapture, beatFromDir) {
             if (shouldCapture === void 0) { shouldCapture = false; }
             var steps = new Array();
-            if (beatFromDir)
+            if (beatFromDir != null)
                 shouldCapture = true;
             var fromValue = this.getCellValue(from);
             for (var _i = 0, ALL_MOVE_DIRECTIONS_1 = Checkers.ALL_MOVE_DIRECTIONS; _i < ALL_MOVE_DIRECTIONS_1.length; _i++) {
@@ -112,7 +112,7 @@ var Checkers;
                     dirSteps = this.findMoveStepsByDirectionKing(from, dir, shouldCapture);
                 else
                     dirSteps = this.findMoveStepsByDirectionSimple(from, dir, shouldCapture);
-                if (steps.length > 0 && steps[0].capturedCell && !shouldCapture) {
+                if (dirSteps.length > 0 && dirSteps[0].capturedCell && !shouldCapture) {
                     shouldCapture = true;
                     steps = steps.filter(function (step) { return (step.capturedCell); });
                 }
@@ -128,13 +128,12 @@ var Checkers;
             while (notCompletedMoves.length > 0) {
                 var move = notCompletedMoves.pop();
                 var lastStep = move.lastStep();
-                var captureFromDir = lastStep.captureFrom();
-                if (!captureFromDir) {
+                if (!lastStep.capturedCell) {
                     move.end.blackPlayer = !move.end.blackPlayer;
                     completedMoves.push(move);
                     continue;
                 }
-                var nextSteps = move.end.findMoveSteps(lastStep.to, true, captureFromDir);
+                var nextSteps = move.end.findMoveSteps(lastStep.to, true, lastStep.captureFrom());
                 if (nextSteps.length == 0) {
                     move.end.blackPlayer = !move.end.blackPlayer;
                     completedMoves.push(move);

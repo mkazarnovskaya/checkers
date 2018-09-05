@@ -16,7 +16,7 @@
 			let result = 0;
 
 			if (this.from.row > this.to.row)
-				result |= 1;
+				result |= Direction.Up;
 
 			let colFrom = this.from.col;
 			if ((this.from.row & 1) == 1)
@@ -26,7 +26,7 @@
 				colTo++;
 
 			if (colFrom < colTo)
-				result |= 2;
+				result |= Direction.Right;
 
 			return result;
 		}
