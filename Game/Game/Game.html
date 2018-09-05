@@ -6,12 +6,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="./Content/bootstrap.min.css">
 	<link rel="stylesheet" href="./Content/game.css">
+	<script src="https://www.lactame.com/lib/ml/3.3.0/ml.min.js"></script>
+	<script src="Scripts/checkers/estimate.js"?></script>
 	<script src="Scripts/jquery-3.0.0.min.js"></script>
 	<script src="Scripts/umd/popper.min.js"></script>
 	<script src="Scripts/bootstrap.min.js"></script>
 	<script src="Scripts/checkers/primitives.js"></script>
 	<script src="Scripts/checkers/position.js"></script>
 	<script src="Scripts/checkers/move.js"></script>
+	<script src="Scripts/checkers/ai.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function () {
 			$(".black-cell").click(function () {
@@ -36,12 +39,17 @@
 					})[0];
 					_currentPosition = selectedMove.end;
 					updateDesk();
+					let aiMove = _ai.findBestMove(_currentPosition, 6, 0.05);
+					_currentPosition = aiMove.end;
+					updateDesk();
 				}
 			});
 
 			$.ajax({
 				url: "./TrainedModels/model_12.json",
 				success: function (data) {
+					_model_weights = data;
+					_ai = new Checkers.Ai();
 					startGame(false);
 				}
 			});
@@ -49,6 +57,7 @@
 
 		var _currentPosition;
 		var _blackPlayer;
+		var _ai;
 		function startGame(blackPlayer) {
 			_currentPosition = new Checkers.Position();
 			_currentPosition.initialize();
