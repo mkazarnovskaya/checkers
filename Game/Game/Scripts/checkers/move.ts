@@ -25,7 +25,7 @@
 			if ((this.to.row & 1) == 1)
 				colTo++;
 
-			if (colFrom < colTo)
+			if (colFrom > colTo)
 				result |= Direction.Right;
 
 			return result;

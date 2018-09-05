@@ -19,7 +19,7 @@ var Checkers;
             var colTo = this.to.col;
             if ((this.to.row & 1) == 1)
                 colTo++;
-            if (colFrom < colTo)
+            if (colFrom > colTo)
                 result |= Checkers.Direction.Right;
             return result;
         };
