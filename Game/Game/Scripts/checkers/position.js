@@ -86,7 +86,7 @@ var Checkers;
                     steps.push(step);
                 }
             }
-            else if (!shouldBeat) {
+            if (!shouldBeat && steps.length == 0) {
                 var nextCellIndex = from.next(dir);
                 if (!nextCellIndex)
                     return steps;

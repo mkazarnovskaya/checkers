@@ -96,7 +96,7 @@
 					steps.push(step);
 				}
 			}
-			else if (!shouldBeat) {
+            if (!shouldBeat && steps.length == 0) {
 				let nextCellIndex = from.next(dir);
 				if (!nextCellIndex)
 					return steps;

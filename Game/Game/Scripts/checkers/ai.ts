@@ -13,13 +13,14 @@
 			this.position = position
 		}
 
-		calculateNextPostions(allNodes: PassedNodes): void {
+        calculateNextPostions(allNodes: PassedNodes): number {
 			this.moves = this.position.findAllMoves()
 			this.nextPostions = this.moves.map(function (move) {
 				let nextPos = move.end;
 				let nextNode = allNodes.addNode(nextPos);
 				return nextNode;
-			});
+            });
+            return this.nextPostions.length;
 		}
 
 		setRate(rate: number) {
@@ -88,14 +89,13 @@
 	export class Ai {
 		buildGraph(position: Position, height: number, allNodes: PassedNodes, leaves: PassedNodes, nodesToEstimate: Node[]):void {
 			var node = allNodes.addNode(position);
-			if (height == 0) {
+            if (height == 0 || (node.calculateNextPostions(allNodes) == 0)) {
 				if (leaves.getNode(node.position) == null) {
 					leaves.addNode(node.position);
 					nodesToEstimate.push(node);
 				}
 			}
 			else {
-				node.calculateNextPostions(allNodes);
 				for (let nextPos of node.nextPostions) {
 					this.buildGraph(nextPos.position, height - 1, allNodes, leaves, nodesToEstimate);
 				}

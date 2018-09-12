@@ -12,6 +12,7 @@ var Checkers;
                 var nextNode = allNodes.addNode(nextPos);
                 return nextNode;
             });
+            return this.nextPostions.length;
         };
         Node.prototype.setRate = function (rate) {
             this.rate = rate;
@@ -73,14 +74,13 @@ var Checkers;
         }
         Ai.prototype.buildGraph = function (position, height, allNodes, leaves, nodesToEstimate) {
             var node = allNodes.addNode(position);
-            if (height == 0) {
+            if (height == 0 || (node.calculateNextPostions(allNodes) == 0)) {
                 if (leaves.getNode(node.position) == null) {
                     leaves.addNode(node.position);
                     nodesToEstimate.push(node);
                 }
             }
             else {
-                node.calculateNextPostions(allNodes);
                 for (var _i = 0, _a = node.nextPostions; _i < _a.length; _i++) {
                     var nextPos = _a[_i];
                     this.buildGraph(nextPos.position, height - 1, allNodes, leaves, nodesToEstimate);
