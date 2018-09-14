@@ -5,7 +5,7 @@ var Checkers;
         CellValue[CellValue["Empty"] = 0] = "Empty";
         CellValue[CellValue["Occupied"] = 1] = "Occupied";
         CellValue[CellValue["Black"] = 2] = "Black";
-        CellValue[CellValue["King"] = 45312] = "King";
+        CellValue[CellValue["King"] = 4] = "King";
     })(CellValue = Checkers.CellValue || (Checkers.CellValue = {}));
     var Direction;
     (function (Direction) {

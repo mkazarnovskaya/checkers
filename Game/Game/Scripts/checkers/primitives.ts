@@ -3,7 +3,7 @@
 		Empty =	0b000,
 		Occupied = 0b001,
 		Black = 0b010,
-		King = 0xb100,
+		King = 0b100,
 	}
 
 	export enum Direction {

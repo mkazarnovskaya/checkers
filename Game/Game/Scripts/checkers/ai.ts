@@ -3,33 +3,27 @@
 
 	class Node {
 		position: Position
-		nextPostions: Node[]
-		moves: Move[]
+		movesCache: Move[]
 		rate: number
-		rated: boolean
 
 		//constructor 
 		constructor(position: Position) {
-			this.position = position
-		}
-
-        calculateNextPostions(allNodes: PassedNodes): number {
-			this.moves = this.position.findAllMoves()
-			this.nextPostions = this.moves.map(function (move) {
-				let nextPos = move.end;
-				let nextNode = allNodes.addNode(nextPos);
-				return nextNode;
-            });
-            return this.nextPostions.length;
+            this.position = position
+            this.rate = null;
 		}
 
 		setRate(rate: number) {
 			this.rate = rate;
-			this.rated = true;
-		}
+        }
+
+        getMoves(): Move[] {
+            if (!this.movesCache)
+                this.movesCache = this.position.findAllMoves();
+            return this.movesCache;
+        }
 	}
 
-	class PassedNodes {
+	class NodesHash {
 		nodes: Object;
 
 		constructor() {
@@ -73,33 +67,51 @@
 		}
 
 
-		getNode(position: Position): Node {
+		getNodeByPosition(position: Position): Node {
 			let hash = this.hash(position);
 			return this.nodes[hash];
 		}
 
-		addNode(position: Position): Node {
-			let hash = this.hash(position);
-			if (!this.nodes[hash])
-				this.nodes[hash] = new Node(position);
-			return this.nodes[hash];
-		}
+		addNode(node:Node): void {
+			let hash = this.hash(node.position);
+            if (this.nodes[hash])
+                throw new Error("Node was already added.")
+			this.nodes[hash] = node;
+        }
+
+        getAllNodes(): Node[] {
+            return Object.keys(this.nodes).map(nodeHash => this.nodes[nodeHash]);
+        }
+
+        getMoveRate(move: Move) {
+            return this.getNodeByPosition(move.end).rate;
+        }
 	}
 
 	export class Ai {
-		buildGraph(position: Position, height: number, allNodes: PassedNodes, leaves: PassedNodes, nodesToEstimate: Node[]):void {
-			var node = allNodes.addNode(position);
-            if (height == 0 || (node.calculateNextPostions(allNodes) == 0)) {
-				if (leaves.getNode(node.position) == null) {
-					leaves.addNode(node.position);
-					nodesToEstimate.push(node);
-				}
-			}
-			else {
-				for (let nextPos of node.nextPostions) {
-					this.buildGraph(nextPos.position, height - 1, allNodes, leaves, nodesToEstimate);
-				}
-			}
+        buildGraph(position: Position, height: number, allNodes: NodesHash, nodesToEstimate: NodesHash):Node {
+            var node = allNodes.getNodeByPosition(position);
+            if (node == null) {
+                node = new Node(position);
+                allNodes.addNode(node);
+            }
+
+            if (height > 0) {
+                var moves = node.getMoves();
+                if (moves.length > 0) {
+                    for (let move of moves)
+                        this.buildGraph(move.end, height - 1, allNodes, nodesToEstimate);
+                }
+                else {
+                    node.setRate(node.position.blackPlayer ? 1 : 0);
+                }
+            }
+            else {
+                if (nodesToEstimate.getNodeByPosition(node.position) == null) {
+                    nodesToEstimate.addNode(node);
+                }
+            }
+            return node;
 		}
 
 		getPosArray(position: Position): number[] {
@@ -151,8 +163,8 @@
 			}
 		}
 
-		rateGraph(node: Node, height: number): number {
-			if (node.rated)
+        rateGraph(node: Node, height: number, allNodes: NodesHash): number {
+			if (node.rate)
 				return node.rate;
 
 			let rate: number
@@ -161,8 +173,9 @@
 			}
 			else {
 				rate = (node.position.blackPlayer ? 1 : 0);
-				for (let nextPos of node.nextPostions) {
-					var nextRate = this.rateGraph(nextPos, height - 1);
+                for (let move of node.getMoves()) {
+                    let nextNode = allNodes.getNodeByPosition(move.end);
+					var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
 					if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
 						rate = nextRate;
 				}
@@ -171,22 +184,38 @@
 			return rate;
 		}
 
-		findBestMove(position: Position, height: number, random: number): Move {
-			let nodesToEstimate = new Array<Node>();
-			let hash = new PassedNodes();
-			let leavesHash = new PassedNodes();
-			this.buildGraph(position, height, hash, leavesHash, nodesToEstimate);
-			this.estimateNodes(nodesToEstimate);
-			let node = hash.getNode(position);
-			this.rateGraph(node, height);
+		findBestMove(position: Position, height: number, randomFactor: number): Move {
+			let passedNodes = new NodesHash();
+            let nodesToEstimate = new NodesHash();
+			let node = this.buildGraph(position, height, passedNodes, nodesToEstimate);
+			this.estimateNodes(nodesToEstimate.getAllNodes());
+			this.rateGraph(node, height,passedNodes);
 
-			let moveCnt = node.moves.length
-			let bestIndex = -1
-			for (let index = 0; index < moveCnt; ++index) {
-				if (bestIndex < 0 || (node.position.blackPlayer && node.nextPostions[index].rate < node.nextPostions[bestIndex].rate) || (!node.position.blackPlayer && node.nextPostions[index].rate > node.nextPostions[bestIndex].rate))
-					bestIndex = index
-			}
-			return node.moves[bestIndex];
+            let bestRate: number;
+            for (let move of node.getMoves()) {
+                if (bestRate == null)
+                    bestRate = passedNodes.getMoveRate(move);
+                else {
+                    let moveRate = passedNodes.getMoveRate(move);
+                    if ((position.blackPlayer && moveRate < bestRate) || (!position.blackPlayer && moveRate > bestRate))
+                        bestRate = moveRate;
+                }
+            }
+
+            //filter moves with rate different from best rate not more than random factor
+            let filteredMoves = node.getMoves().filter(function (move) {
+                let moveRate = passedNodes.getMoveRate(move);
+                return (Math.abs(moveRate - bestRate) <= randomFactor);
+            });
+
+            //return random element from filtered array
+            let selectedMove = filteredMoves[Math.floor(Math.random() * filteredMoves.length)];
+
+            //debug info
+            let rates = estimate([this.getPosArray(position), this.getPosArray(selectedMove.end)]);
+            console.log(node.rate + "(" + rates[0] + ") - " + passedNodes.getMoveRate(selectedMove) + "(" + rates[1] + ")");
+
+            return selectedMove;
 		}
 	}
 }

@@ -4,27 +4,23 @@ var Checkers;
         //constructor 
         function Node(position) {
             this.position = position;
+            this.rate = null;
         }
-        Node.prototype.calculateNextPostions = function (allNodes) {
-            this.moves = this.position.findAllMoves();
-            this.nextPostions = this.moves.map(function (move) {
-                var nextPos = move.end;
-                var nextNode = allNodes.addNode(nextPos);
-                return nextNode;
-            });
-            return this.nextPostions.length;
-        };
         Node.prototype.setRate = function (rate) {
             this.rate = rate;
-            this.rated = true;
+        };
+        Node.prototype.getMoves = function () {
+            if (!this.movesCache)
+                this.movesCache = this.position.findAllMoves();
+            return this.movesCache;
         };
         return Node;
     }());
-    var PassedNodes = /** @class */ (function () {
-        function PassedNodes() {
+    var NodesHash = /** @class */ (function () {
+        function NodesHash() {
             this.nodes = new Object();
         }
-        PassedNodes.prototype.hash = function (position) {
+        NodesHash.prototype.hash = function (position) {
             var key0 = position.blackPlayer ? "1" : "2";
             var key1 = 0;
             var key2 = 0;
@@ -57,35 +53,52 @@ var Checkers;
             }
             return (key0 + "x" + new String(key1) + "x" + new String(key2) + "x" + new String(key3));
         };
-        PassedNodes.prototype.getNode = function (position) {
+        NodesHash.prototype.getNodeByPosition = function (position) {
             var hash = this.hash(position);
             return this.nodes[hash];
         };
-        PassedNodes.prototype.addNode = function (position) {
-            var hash = this.hash(position);
-            if (!this.nodes[hash])
-                this.nodes[hash] = new Node(position);
-            return this.nodes[hash];
+        NodesHash.prototype.addNode = function (node) {
+            var hash = this.hash(node.position);
+            if (this.nodes[hash])
+                throw new Error("Node was already added.");
+            this.nodes[hash] = node;
         };
-        return PassedNodes;
+        NodesHash.prototype.getAllNodes = function () {
+            var _this = this;
+            return Object.keys(this.nodes).map(function (nodeHash) { return _this.nodes[nodeHash]; });
+        };
+        NodesHash.prototype.getMoveRate = function (move) {
+            return this.getNodeByPosition(move.end).rate;
+        };
+        return NodesHash;
     }());
     var Ai = /** @class */ (function () {
         function Ai() {
         }
-        Ai.prototype.buildGraph = function (position, height, allNodes, leaves, nodesToEstimate) {
-            var node = allNodes.addNode(position);
-            if (height == 0 || (node.calculateNextPostions(allNodes) == 0)) {
-                if (leaves.getNode(node.position) == null) {
-                    leaves.addNode(node.position);
-                    nodesToEstimate.push(node);
+        Ai.prototype.buildGraph = function (position, height, allNodes, nodesToEstimate) {
+            var node = allNodes.getNodeByPosition(position);
+            if (node == null) {
+                node = new Node(position);
+                allNodes.addNode(node);
+            }
+            if (height > 0) {
+                var moves = node.getMoves();
+                if (moves.length > 0) {
+                    for (var _i = 0, moves_1 = moves; _i < moves_1.length; _i++) {
+                        var move = moves_1[_i];
+                        this.buildGraph(move.end, height - 1, allNodes, nodesToEstimate);
+                    }
+                }
+                else {
+                    node.setRate(node.position.blackPlayer ? 1 : 0);
                 }
             }
             else {
-                for (var _i = 0, _a = node.nextPostions; _i < _a.length; _i++) {
-                    var nextPos = _a[_i];
-                    this.buildGraph(nextPos.position, height - 1, allNodes, leaves, nodesToEstimate);
+                if (nodesToEstimate.getNodeByPosition(node.position) == null) {
+                    nodesToEstimate.addNode(node);
                 }
             }
+            return node;
         };
         Ai.prototype.getPosArray = function (position) {
             var result = new Array(129);
@@ -131,8 +144,8 @@ var Checkers;
                 nodesToEstimate[index].setRate(rates[index]);
             }
         };
-        Ai.prototype.rateGraph = function (node, height) {
-            if (node.rated)
+        Ai.prototype.rateGraph = function (node, height, allNodes) {
+            if (node.rate)
                 return node.rate;
             var rate;
             if (height == 0) {
@@ -140,9 +153,10 @@ var Checkers;
             }
             else {
                 rate = (node.position.blackPlayer ? 1 : 0);
-                for (var _i = 0, _a = node.nextPostions; _i < _a.length; _i++) {
-                    var nextPos = _a[_i];
-                    var nextRate = this.rateGraph(nextPos, height - 1);
+                for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
+                    var move = _a[_i];
+                    var nextNode = allNodes.getNodeByPosition(move.end);
+                    var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
                     if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
                         rate = nextRate;
                 }
@@ -150,21 +164,34 @@ var Checkers;
             node.setRate(rate);
             return rate;
         };
-        Ai.prototype.findBestMove = function (position, height, random) {
-            var nodesToEstimate = new Array();
-            var hash = new PassedNodes();
-            var leavesHash = new PassedNodes();
-            this.buildGraph(position, height, hash, leavesHash, nodesToEstimate);
-            this.estimateNodes(nodesToEstimate);
-            var node = hash.getNode(position);
-            this.rateGraph(node, height);
-            var moveCnt = node.moves.length;
-            var bestIndex = -1;
-            for (var index = 0; index < moveCnt; ++index) {
-                if (bestIndex < 0 || (node.position.blackPlayer && node.nextPostions[index].rate < node.nextPostions[bestIndex].rate) || (!node.position.blackPlayer && node.nextPostions[index].rate > node.nextPostions[bestIndex].rate))
-                    bestIndex = index;
+        Ai.prototype.findBestMove = function (position, height, randomFactor) {
+            var passedNodes = new NodesHash();
+            var nodesToEstimate = new NodesHash();
+            var node = this.buildGraph(position, height, passedNodes, nodesToEstimate);
+            this.estimateNodes(nodesToEstimate.getAllNodes());
+            this.rateGraph(node, height, passedNodes);
+            var bestRate;
+            for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
+                var move = _a[_i];
+                if (bestRate == null)
+                    bestRate = passedNodes.getMoveRate(move);
+                else {
+                    var moveRate = passedNodes.getMoveRate(move);
+                    if ((position.blackPlayer && moveRate < bestRate) || (!position.blackPlayer && moveRate > bestRate))
+                        bestRate = moveRate;
+                }
             }
-            return node.moves[bestIndex];
+            //filter moves with rate different from best rate not more than random factor
+            var filteredMoves = node.getMoves().filter(function (move) {
+                var moveRate = passedNodes.getMoveRate(move);
+                return (Math.abs(moveRate - bestRate) <= randomFactor);
+            });
+            //return random element from filtered array
+            var selectedMove = filteredMoves[Math.floor(Math.random() * filteredMoves.length)];
+            //debug info
+            var rates = estimate([this.getPosArray(position), this.getPosArray(selectedMove.end)]);
+            console.log(node.rate + "(" + rates[0] + ") - " + passedNodes.getMoveRate(selectedMove) + "(" + rates[1] + ")");
+            return selectedMove;
         };
         return Ai;
     }());
