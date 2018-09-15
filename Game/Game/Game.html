@@ -75,7 +75,7 @@
 		}
 
         function makeAiMove() {
-            let aiMove = _ai.findBestMove(_currentPosition, 7, 0.03);
+            let aiMove = _ai.findBestMove(_currentPosition, 7, 0.01);
             _currentPosition = aiMove.end;
             updateDesk();
         }
