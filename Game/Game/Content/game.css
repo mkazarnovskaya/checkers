@@ -37,3 +37,7 @@
 	border-style: solid ;
 	cursor: grab;
 }
+
+.rotated{
+    transform: rotate(180deg);
+}
