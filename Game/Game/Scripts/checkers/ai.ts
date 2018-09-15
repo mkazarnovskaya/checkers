@@ -212,6 +212,7 @@
             //debug info
             let rates = estimate([this.getPosArray(position), this.getPosArray(selectedMove.end)]);
             console.log(node.rate + "(" + rates[0] + ") - " + passedNodes.getMoveRate(selectedMove) + "(" + rates[1] + ")");
+            console.log("(" + selectedMove.steps[0].from.col + "," + +selectedMove.steps[0].from.row + ") - (" + + selectedMove.steps[selectedMove.steps.length - 1].to.col + "," + +selectedMove.steps[selectedMove.steps.length - 1].to.row + ")");
 
             return selectedMove;
 		}

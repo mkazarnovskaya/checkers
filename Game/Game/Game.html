@@ -37,7 +37,7 @@
 						var targetCell = m.getLastTargetCell();
 						return (targetCell.row == cellIndex.row && targetCell.col == cellIndex.col);
 					})[0];
-					_currentPosition = selectedMove.end;
+                    _currentPosition = selectedMove.end;
                     updateDesk();
                     makeAiMove();
 				}
