@@ -145,21 +145,18 @@ var Checkers;
             }
         };
         Ai.prototype.rateGraph = function (node, height, allNodes) {
-            if (node.rate)
-                return node.rate;
-            var rate;
-            if (height == 0) {
+            if (height == 0 || node.getMoves().length == 0) {
+                if (node.rate != null)
+                    return node.rate;
                 throw new Error("leaf node wasn't estimated");
             }
-            else {
-                rate = (node.position.blackPlayer ? 1 : 0);
-                for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
-                    var move = _a[_i];
-                    var nextNode = allNodes.getNodeByPosition(move.end);
-                    var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
-                    if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
-                        rate = nextRate;
-                }
+            var rate = (node.position.blackPlayer ? 1 : 0);
+            for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
+                var move = _a[_i];
+                var nextNode = allNodes.getNodeByPosition(move.end);
+                var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
+                if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
+                    rate = nextRate;
             }
             node.setRate(rate);
             return rate;

@@ -164,22 +164,20 @@
 		}
 
         rateGraph(node: Node, height: number, allNodes: NodesHash): number {
-			if (node.rate)
-				return node.rate;
-
-			let rate: number
-			if (height == 0) {
+			if (height == 0 || node.getMoves().length == 0) {
+                if (node.rate != null)
+                    return node.rate;
 				throw new Error("leaf node wasn't estimated");
 			}
-			else {
-				rate = (node.position.blackPlayer ? 1 : 0);
-                for (let move of node.getMoves()) {
-                    let nextNode = allNodes.getNodeByPosition(move.end);
-					var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
-					if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
-						rate = nextRate;
-				}
+
+			let rate = (node.position.blackPlayer ? 1 : 0);
+            for (let move of node.getMoves()) {
+                let nextNode = allNodes.getNodeByPosition(move.end);
+				var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
+				if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
+					rate = nextRate;
 			}
+
 			node.setRate(rate)
 			return rate;
 		}
