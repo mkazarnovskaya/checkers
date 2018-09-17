@@ -75,9 +75,11 @@
 		}
 
         function startAiMove() {
+            $(".thinking").show();
             setTimeout(() => {
                 let aiMove = _ai.findBestMove(_currentPosition, 7, 0.01);
                 _currentPosition = aiMove.end;
+                $(".thinking").hide();
                 updateDesk();
             }, 500);
         }
@@ -130,110 +132,111 @@
 	</script>
 </head>
 <body class="bg-secondary">
-	<nav class="navbar navbar-expand bg-dark navbar-dark small">
-		<ul class="navbar-nav">
-			<li class="nav-item active">
-				<a id="new_game_white" class="nav-link" href="#">New Game - White</a>
-			</li>
-			<li class="nav-item active">
-				<a id="new_game_black" class="nav-link" href="#">New Game - Black</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#">Rules</a>
-			</li>
-		</ul>
-	</nav>
-	<br>
-	<div class="container body-content">
-		<div class="row">
-			<div class="col-md-3 col-1"></div>
-			<div class="col-md-6 col-10">
-				<div id="desk" class="container">
-					<div class="row">
-						<div class="col bg-light"></div>
-						<div id="cell_7_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_7_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_7_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_7_3" class="col black-cell"></div>
-					</div>
-					<div class="row">
-						<div id="cell_6_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_6_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_6_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_6_3" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-					</div>
-					<div class="row">
-						<div class="col bg-light"></div>
-						<div id="cell_5_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_5_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_5_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_5_3" class="col black-cell"></div>
-					</div>
-					<div class="row">
-						<div id="cell_4_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_4_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_4_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_4_3" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-					</div>
-					<div class="row">
-						<div class="col bg-light"></div>
-						<div id="cell_3_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_3_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_3_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_3_3" class="col black-cell"></div>
-					</div>
-					<div class="row">
-						<div id="cell_2_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_2_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_2_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_2_3" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-					</div>
-					<div class="row">
-						<div class="col bg-light"></div>
-						<div id="cell_1_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_1_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_1_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_1_3" class="col black-cell"></div>
-					</div>
-					<div class="row">
-						<div id="cell_0_0" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_0_1" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_0_2" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-						<div id="cell_0_3" class="col black-cell"></div>
-						<div class="col bg-light"></div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 col-1"></div>
-		</div>
-	</div>
+    <div class="thinking" style="display:none">I'm thinking ...</div>
+    <nav class="navbar navbar-expand bg-dark navbar-dark small">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a id="new_game_white" class="nav-link" href="#">New Game - White</a>
+            </li>
+            <li class="nav-item active">
+                <a id="new_game_black" class="nav-link" href="#">New Game - Black</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Rules</a>
+            </li>
+        </ul>
+    </nav>
+    <br>
+    <div class="container body-content">
+        <div class="row">
+            <div class="col-md-3 col-1"></div>
+            <div class="col-md-6 col-10">
+                <div id="desk" class="container">
+                    <div class="row">
+                        <div class="col bg-light"></div>
+                        <div id="cell_7_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_7_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_7_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_7_3" class="col black-cell"></div>
+                    </div>
+                    <div class="row">
+                        <div id="cell_6_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_6_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_6_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_6_3" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col bg-light"></div>
+                        <div id="cell_5_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_5_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_5_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_5_3" class="col black-cell"></div>
+                    </div>
+                    <div class="row">
+                        <div id="cell_4_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_4_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_4_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_4_3" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col bg-light"></div>
+                        <div id="cell_3_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_3_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_3_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_3_3" class="col black-cell"></div>
+                    </div>
+                    <div class="row">
+                        <div id="cell_2_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_2_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_2_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_2_3" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col bg-light"></div>
+                        <div id="cell_1_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_1_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_1_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_1_3" class="col black-cell"></div>
+                    </div>
+                    <div class="row">
+                        <div id="cell_0_0" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_0_1" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_0_2" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                        <div id="cell_0_3" class="col black-cell"></div>
+                        <div class="col bg-light"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-1"></div>
+        </div>
+    </div>
 
 </body>
 </html>
