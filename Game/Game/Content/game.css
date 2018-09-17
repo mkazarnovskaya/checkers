@@ -28,14 +28,11 @@
 }
 
 .selected-for-move {
-	border-color: coral;
-	border-style: solid;
+    background-color: #d57e29;
 }
 
 .possible-move-target {
-	border-color: forestgreen;
-	border-style: solid ;
-	cursor: grab;
+    cursor: grab;
 }
 
 .rotated{
