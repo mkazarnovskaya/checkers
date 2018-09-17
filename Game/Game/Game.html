@@ -39,7 +39,7 @@
 					})[0];
                     _currentPosition = selectedMove.end;
                     updateDesk();
-                    makeAiMove();
+                    startAiMove();
 				}
 			});
 
@@ -67,17 +67,19 @@
 
             if (_blackPlayer) {
                 $("#desk").addClass("rotated");
-                makeAiMove();
+                startAiMove();
             }
             else {
                 $("#desk").removeClass("rotated");
             }
 		}
 
-        function makeAiMove() {
-            let aiMove = _ai.findBestMove(_currentPosition, 7, 0.01);
-            _currentPosition = aiMove.end;
-            updateDesk();
+        function startAiMove() {
+            setTimeout(() => {
+                let aiMove = _ai.findBestMove(_currentPosition, 7, 0.01);
+                _currentPosition = aiMove.end;
+                updateDesk();
+            }, 500);
         }
 
 		function updateDesk() {
