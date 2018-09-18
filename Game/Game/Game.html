@@ -15,7 +15,25 @@
     <script src="Scripts/checkers/position.js"></script>
     <script src="Scripts/checkers/move.js"></script>
     <script src="Scripts/checkers/ai.js"></script>
-    <script src="Scripts/game.js"></script>
+    <script src="Scripts/gamecontroller.js"></script>
+    <script type="text/javascript">
+        var gameController;
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "./TrainedModels/model_12.json",
+                success: function (data) {
+                    _model_weights = data;
+                    var ai = new Checkers.Ai();
+                    gameController = new GameController(ai);
+                    gameController.startNewGame(false);
+
+                    $("#new_game_white").click(() => gameController.startNewGame(false));
+                    $("#new_game_black").click(() => gameController.startNewGame(true));
+                }
+            });
+        });
+    </script>
 
 </head>
 <body class="bg-secondary">
