@@ -44,6 +44,7 @@
 
     this.updateDesk = function () {
         let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move"];
+        var movableCellIndexes = this.currentPosition.findAllMoves().map(m => m.steps[0].from);
         for (let row = 0; row < 8; ++row) {
             for (let col = 0; col < 4; ++col) {
                 let cellId = "cell_" + row + "_" + col;
@@ -63,18 +64,11 @@
                 else if (cellValue == Checkers.BLACK_KING)
                     cell.addClass("contains-black-king");
 
-                if (this.isMyPiece(cellIndex) && this.currentPosition.findMovesFromCell(cellIndex).length > 0) {
+                if (movableCellIndexes.some(c=>c.row == row && c.col == col)) {
                     cell.addClass("contains-movable-piece");
                 }
             }
         }
-    };
-
-    this.isMyPiece = function (cellIndex) {
-        let cellValue = this.currentPosition.getCellValue(cellIndex);
-        if (cellValue == Checkers.CellValue.Empty)
-            return false;
-        return ((this.userPlaysBlack && (cellValue & Checkers.CellValue.Black)) || (!this.userPlaysBlack && !(cellValue & Checkers.CellValue.Black)));
     };
 
     this.getCellIndexByCellId = function (cellId) {
@@ -101,5 +95,6 @@
             $("#desk").removeClass("rotated");
         }
     }
+
     return this;
 }
