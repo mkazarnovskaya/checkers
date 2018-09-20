@@ -35,6 +35,10 @@
     cursor: grab;
 }
 
+.last-moved-piece{
+    background-color:lightsteelblue;
+}
+
 .rotated{
     transform: rotate(180deg);
 }

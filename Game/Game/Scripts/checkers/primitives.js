@@ -35,6 +35,9 @@ var Checkers;
                 return null;
             return new CellIndex(nextRow, nextCol);
         };
+        CellIndex.prototype.equals = function (other) {
+            return (this.row == other.row && this.col == other.col);
+        };
         return CellIndex;
     }());
     Checkers.CellIndex = CellIndex;

@@ -2,9 +2,14 @@
     this.graphHeight = 7;
     this.randomFactor = 0.01;
     this.ai = ai;
+    this.lastMove = null;
+    this.initialPosition = new Checkers.Position();
+
     initialize(this);
 
     function initialize(gameController) {
+        gameController.initialPosition.initialize();
+
         $(".black-cell").click(function () {
             var cellIndex = gameController.getCellIndexByCellId(this.id);
             if ($(this).hasClass("contains-movable-piece")) {
@@ -12,7 +17,7 @@
                 $(".possible-move-target").removeClass("possible-move-target");
                 $(this).addClass("selected-for-move");
                 var cellIndex = gameController.getCellIndexByCellId(this.id);
-                var possibleMoves = gameController.currentPosition.findMovesFromCell(cellIndex);
+                var possibleMoves = gameController.getPositionOnMoveBegin().findMovesFromCell(cellIndex);
                 possibleMoves.forEach(function (move) {
                     let targetCellIndex = move.getLastTargetCell();
                     let targetCell = gameController.getCellByCellIndex(targetCellIndex);
@@ -21,30 +26,34 @@
             }
             else if ($(this).hasClass("possible-move-target")) {
                 var startCell = gameController.getCellIndexByCellId($(".selected-for-move").attr("id"));
-                var selectedMove = gameController.currentPosition.findMovesFromCell(startCell).filter(m => {
+                var selectedMove = gameController.getPositionOnMoveBegin().findMovesFromCell(startCell).filter(m => {
                     var targetCell = m.getLastTargetCell();
                     return (targetCell.row == cellIndex.row && targetCell.col == cellIndex.col);
                 })[0];
-                gameController.currentPosition = selectedMove.end;
+                gameController.lastMove = selectedMove;
                 gameController.updateDesk();
                 gameController.makeAiMove();
             }
         });
     }
 
+    this.getPositionOnMoveBegin = function () {
+        return (this.lastMove != null) ? this.lastMove.end : this.initialPosition;
+    }
+
     this.makeAiMove = function () {
         $(".thinking").show();
         setTimeout(() => {
-            let aiMove = this.ai.findBestMove(this.currentPosition, this.graphHeight, this.randomFactor);
-            this.currentPosition = aiMove.end;
+            let aiMove = this.ai.findBestMove(this.getPositionOnMoveBegin(), this.graphHeight, this.randomFactor);
+            this.lastMove = aiMove;
             $(".thinking").hide();
             this.updateDesk();
         }, 500);
     };
 
     this.updateDesk = function () {
-        let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move"];
-        var movableCellIndexes = this.currentPosition.findAllMoves().map(m => m.steps[0].from);
+        let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move", "last-moved-piece"];
+        var movableCellIndexes = this.getPositionOnMoveBegin().findAllMoves().map(m => m.steps[0].from);
         for (let row = 0; row < 8; ++row) {
             for (let col = 0; col < 4; ++col) {
                 let cellId = "cell_" + row + "_" + col;
@@ -53,7 +62,7 @@
                     cell.removeClass(className);
                 });
                 let cellIndex = new Checkers.CellIndex(row, col);
-                let cellValue = this.currentPosition.getCellValue(cellIndex);
+                let cellValue = this.getPositionOnMoveBegin().getCellValue(cellIndex);
 
                 if (cellValue == Checkers.WHITE_SIMPLE)
                     cell.addClass("contains-white-simple");
@@ -64,8 +73,11 @@
                 else if (cellValue == Checkers.BLACK_KING)
                     cell.addClass("contains-black-king");
 
-                if (movableCellIndexes.some(c=>c.row == row && c.col == col)) {
+                if (movableCellIndexes.some(c => c.equals(cellIndex))) {
                     cell.addClass("contains-movable-piece");
+                }
+                if (this.lastMove != null && this.lastMove.getLastTargetCell().equals(cellIndex)) {
+                    cell.addClass("last-moved-piece");
                 }
             }
         }
@@ -82,8 +94,7 @@
     }
 
     this.startNewGame =  function (userPlaysBlack) {
-        this.currentPosition = new Checkers.Position();
-        this.currentPosition.initialize();
+        this.lastMove = null;
         this.userPlaysBlack = userPlaysBlack;
         this.updateDesk();
 
