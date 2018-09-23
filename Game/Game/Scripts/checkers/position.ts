@@ -60,6 +60,25 @@
 			return cell;
 		}
 
+		findFirstToCaptureByKing(start: CellIndex, dir: Direction): CellIndex {
+			let cellToCaptureIndex = this.findFirstNotEmptyCell(start, dir);
+			if (cellToCaptureIndex && !this.isMyPiece(cellToCaptureIndex)) {
+				let to = cellToCaptureIndex.next(dir);
+				if (to && this.isEmpty(cellToCaptureIndex.next(dir)))
+					return cellToCaptureIndex;
+			}
+			return null;
+		}
+
+		static inverseDirection(dir: Direction): Direction {
+			let result = 0;
+			if ((dir & Direction.Right) == 0)
+				result |= Direction.Right;
+			if ((dir & Direction.Up) == 0)
+				result |= Direction.Up;
+			return result;
+		}
+
 		findMoveStepsByDirectionSimple(from: CellIndex, dir: Direction, shouldBeat: boolean): MoveStep[] {
 			let steps = new Array<MoveStep>();
 			let nextCellIndex = from.next(dir);
@@ -86,17 +105,42 @@
 			return steps;
 		}
 
-		findMoveStepsByDirectionKing(from: CellIndex, dir: Direction, shouldBeat: boolean): MoveStep[] {
+		findMoveStepsByDirectionKing(from: CellIndex, dir: Direction, shouldCapture: boolean): MoveStep[] {
 			let steps = new Array<MoveStep>();
 
-			let cellToCaptureIndex = this.findFirstNotEmptyCell(from, dir);
-			if (cellToCaptureIndex && !this.isMyPiece(cellToCaptureIndex)) {
+			let cellToCaptureIndex = this.findFirstToCaptureByKing(from, dir);
+			if (cellToCaptureIndex) {
+				let shouldContinueCapture = false;
+				let inversedDir = Position.inverseDirection(dir);
 				for (let to = cellToCaptureIndex.next(dir); to && this.isEmpty(to); to = to.next(dir)) {
+					//check if we should continue capturing
+					let shouldConinueCaptureForSelectedStep = false;
+					for (let continueDir of ALL_MOVE_DIRECTIONS) {
+						if (continueDir == inversedDir)
+							continue;
+						let cellToCaptureNext = this.findFirstToCaptureByKing(to, continueDir);
+						if (cellToCaptureNext) {
+							shouldConinueCaptureForSelectedStep = true;
+							break;
+						}
+					}
+					if (shouldConinueCaptureForSelectedStep) {
+						if (!shouldContinueCapture) {
+							steps = new Array<MoveStep>();
+							shouldContinueCapture = true;
+						}
+					}
+					else {
+						if (shouldContinueCapture)
+							continue;
+					}
+
 					let step = new MoveStep(from, to, cellToCaptureIndex);
 					steps.push(step);
 				}
 			}
-            if (!shouldBeat && steps.length == 0) {
+
+			if (!shouldCapture && steps.length == 0) {
 				let nextCellIndex = from.next(dir);
 				if (!nextCellIndex)
 					return steps;

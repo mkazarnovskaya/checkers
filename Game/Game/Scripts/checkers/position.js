@@ -52,6 +52,23 @@ var Checkers;
                 cell = cell.next(dir);
             return cell;
         };
+        Position.prototype.findFirstToCaptureByKing = function (start, dir) {
+            var cellToCaptureIndex = this.findFirstNotEmptyCell(start, dir);
+            if (cellToCaptureIndex && !this.isMyPiece(cellToCaptureIndex)) {
+                var to = cellToCaptureIndex.next(dir);
+                if (to && this.isEmpty(cellToCaptureIndex.next(dir)))
+                    return cellToCaptureIndex;
+            }
+            return null;
+        };
+        Position.inverseDirection = function (dir) {
+            var result = 0;
+            if ((dir & Checkers.Direction.Right) == 0)
+                result |= Checkers.Direction.Right;
+            if ((dir & Checkers.Direction.Up) == 0)
+                result |= Checkers.Direction.Up;
+            return result;
+        };
         Position.prototype.findMoveStepsByDirectionSimple = function (from, dir, shouldBeat) {
             var steps = new Array();
             var nextCellIndex = from.next(dir);
@@ -77,16 +94,40 @@ var Checkers;
             }
             return steps;
         };
-        Position.prototype.findMoveStepsByDirectionKing = function (from, dir, shouldBeat) {
+        Position.prototype.findMoveStepsByDirectionKing = function (from, dir, shouldCapture) {
             var steps = new Array();
-            var cellToCaptureIndex = this.findFirstNotEmptyCell(from, dir);
-            if (cellToCaptureIndex && !this.isMyPiece(cellToCaptureIndex)) {
+            var cellToCaptureIndex = this.findFirstToCaptureByKing(from, dir);
+            if (cellToCaptureIndex) {
+                var shouldContinueCapture = false;
+                var inversedDir = Position.inverseDirection(dir);
                 for (var to = cellToCaptureIndex.next(dir); to && this.isEmpty(to); to = to.next(dir)) {
+                    //check if we should continue capturing
+                    var shouldConinueCaptureForSelectedStep = false;
+                    for (var _i = 0, ALL_MOVE_DIRECTIONS_1 = Checkers.ALL_MOVE_DIRECTIONS; _i < ALL_MOVE_DIRECTIONS_1.length; _i++) {
+                        var continueDir = ALL_MOVE_DIRECTIONS_1[_i];
+                        if (continueDir == inversedDir)
+                            continue;
+                        var cellToCaptureNext = this.findFirstToCaptureByKing(to, continueDir);
+                        if (cellToCaptureNext) {
+                            shouldConinueCaptureForSelectedStep = true;
+                            break;
+                        }
+                    }
+                    if (shouldConinueCaptureForSelectedStep) {
+                        if (!shouldContinueCapture) {
+                            steps = new Array();
+                            shouldContinueCapture = true;
+                        }
+                    }
+                    else {
+                        if (shouldContinueCapture)
+                            continue;
+                    }
                     var step = new Checkers.MoveStep(from, to, cellToCaptureIndex);
                     steps.push(step);
                 }
             }
-            if (!shouldBeat && steps.length == 0) {
+            if (!shouldCapture && steps.length == 0) {
                 var nextCellIndex = from.next(dir);
                 if (!nextCellIndex)
                     return steps;
@@ -103,8 +144,8 @@ var Checkers;
             if (beatFromDir != null)
                 shouldCapture = true;
             var fromValue = this.getCellValue(from);
-            for (var _i = 0, ALL_MOVE_DIRECTIONS_1 = Checkers.ALL_MOVE_DIRECTIONS; _i < ALL_MOVE_DIRECTIONS_1.length; _i++) {
-                var dir = ALL_MOVE_DIRECTIONS_1[_i];
+            for (var _i = 0, ALL_MOVE_DIRECTIONS_2 = Checkers.ALL_MOVE_DIRECTIONS; _i < ALL_MOVE_DIRECTIONS_2.length; _i++) {
+                var dir = ALL_MOVE_DIRECTIONS_2[_i];
                 if (dir == beatFromDir)
                     continue;
                 var dirSteps = void 0;
