@@ -3,7 +3,8 @@
     this.randomFactor = 0.01;
     this.ai = ai;
     this.lastMove = null;
-    this.initialPosition = new Checkers.Position();
+	this.initialPosition = new Checkers.Position();
+	this.currentMove = null;
 
     initialize(this);
 
@@ -11,35 +12,64 @@
         gameController.initialPosition.initialize();
 
         $(".black-cell").click(function () {
-            var cellIndex = gameController.getCellIndexByCellId(this.id);
-            if ($(this).hasClass("contains-movable-piece")) {
-                $(".selected-for-move").removeClass("selected-for-move");
-                $(".possible-move-target").removeClass("possible-move-target");
-                $(this).addClass("selected-for-move");
-                var cellIndex = gameController.getCellIndexByCellId(this.id);
-                var possibleMoves = gameController.getPositionOnMoveBegin().findMovesFromCell(cellIndex);
-                possibleMoves.forEach(function (move) {
-                    let targetCellIndex = move.getLastTargetCell();
-                    let targetCell = gameController.getCellByCellIndex(targetCellIndex);
-                    targetCell.addClass("possible-move-target");
-                });
+			if ($(this).hasClass("contains-movable-piece")) {
+				gameController.onSelectPieceToMove(this);
             }
-            else if ($(this).hasClass("possible-move-target")) {
-                var startCell = gameController.getCellIndexByCellId($(".selected-for-move").attr("id"));
-                var selectedMove = gameController.getPositionOnMoveBegin().findMovesFromCell(startCell).filter(m => {
-                    var targetCell = m.getLastTargetCell();
-                    return (targetCell.row == cellIndex.row && targetCell.col == cellIndex.col);
-                })[0];
-                gameController.lastMove = selectedMove;
-                gameController.updateDesk();
-                gameController.makeAiMove();
+			else if ($(this).hasClass("possible-move-target")) {
+				gameController.onSelectMoveTargetCell(this);
             }
         });
-    }
+	}
+
+	this.onSelectPieceToMove = function (sender) {
+		$(".selected-for-move").removeClass("selected-for-move");
+		$(".possible-move-target").removeClass("possible-move-target");
+		$(sender).addClass("selected-for-move");
+		var cellIndex = this.getCellIndexByCellId(sender.id);
+		var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(cellIndex);
+		if (this.currentMove != null)
+			possibleMoves = possibleMoves.filter(m => m.startsWith(this.currentMove.steps));
+		possibleMoves.forEach(function (move) {
+			let stepIndex = (this.currentMove != null) ? this.currentMove.steps.length : 0;
+			let targetCellIndex = move.steps[stepIndex].to;
+			let targetCell = this.getCellByCellIndex(targetCellIndex);
+			targetCell.addClass("possible-move-target");
+		}, this);
+	}
+
+	this.onSelectMoveTargetCell = function (sender) {
+		var selectedCellIndex = this.getCellIndexByCellId($(".selected-for-move").attr("id"));
+		var targetCellIndex = this.getCellIndexByCellId(sender.id);
+		if (this.currentMove == null) {
+			var step = this.getPositionOnCurrentStep().findMoveSteps(selectedCellIndex).filter(s => s.to.equals(targetCellIndex))[0];
+			var pos = this.getPositionOnMoveBegin().copy();
+			step.apply(pos);
+			this.currentMove = new Checkers.Move([step], pos);
+		}
+		else {
+			var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(this.currentMove.steps[0].from)
+				.filter(m = m.startsWith(this.currentMove.steps) && m.steps[this.currentMove.steps.length].to.equals(targetCellIndex));
+			var step = possibleMoves[0].steps[this.currentMove.steps.length];
+			this.currentMove.addStep(step);
+		}
+
+		if (!this.getPositionOnMoveBegin().findAllMoves().some(m => m.startsWith(this.currentMove.steps) && m.steps.length > this.currentMove.steps.length)) {
+			this.lastMove = this.currentMove;
+			this.lastMove.end.blackPlayer = !this.lastMove.end.blackPlayer;
+			this.currentMove = null;
+		}
+		this.updateDesk();
+		if (this.currentMove == null)
+			this.makeAiMove();
+	}
 
     this.getPositionOnMoveBegin = function () {
         return (this.lastMove != null) ? this.lastMove.end : this.initialPosition;
-    }
+	}
+
+	this.getPositionOnCurrentStep = function () {
+		return (this.currentMove != null) ? this.currentMove.end : this.getPositionOnMoveBegin();
+	}
 
     this.makeAiMove = function () {
         $(".thinking").show();
@@ -52,8 +82,8 @@
     };
 
     this.updateDesk = function () {
-        let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move", "last-moved-piece"];
-        var movableCellIndexes = this.getPositionOnMoveBegin().findAllMoves().map(m => m.steps[0].from);
+		let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move", "possible-move-target", "last-moved-piece"];
+		var movableCellIndexes = (this.currentMove == null) ? this.getPositionOnMoveBegin().findAllMoves().map(m => m.steps[0].from) : [this.currentMove.getLastTargetCell()];
         for (let row = 0; row < 8; ++row) {
             for (let col = 0; col < 4; ++col) {
                 let cellId = "cell_" + row + "_" + col;
@@ -62,7 +92,7 @@
                     cell.removeClass(className);
                 });
                 let cellIndex = new Checkers.CellIndex(row, col);
-                let cellValue = this.getPositionOnMoveBegin().getCellValue(cellIndex);
+				let cellValue = this.getPositionOnCurrentStep().getCellValue(cellIndex);
 
                 if (cellValue == Checkers.WHITE_SIMPLE)
                     cell.addClass("contains-white-simple");

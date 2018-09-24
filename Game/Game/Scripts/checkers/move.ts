@@ -48,6 +48,16 @@
 			}
 			pos.setCellValue(this.to, piece);
 		}
+
+		equals(other: MoveStep): boolean {
+			if (other == null)
+				return false;
+			if (!this.from.equals(other.from) || !this.to.equals(other.to))
+				return false;
+			if (this.capturedCell == null)
+				return (other.capturedCell == null);
+			return (this.capturedCell.equals(other.capturedCell));
+		}
 	}
 
 	export class Move {
@@ -76,6 +86,19 @@
 
 		isCapturing(): boolean {
 			return (this.lastStep().capturedCell != null);
+		}
+
+		startsWith(steps: MoveStep[]): boolean {
+			if (steps == null)
+				return true;
+			let len = steps.length;
+			if (len > this.steps.length)
+				return false;
+			for (let stepIndex = 0; stepIndex < len; ++stepIndex) {
+				if (!this.steps[stepIndex].equals(steps[stepIndex]))
+					return false;
+			}
+			return true;
 		}
 
 		getLastTargetCell(): CellIndex {

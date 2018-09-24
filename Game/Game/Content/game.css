@@ -32,7 +32,8 @@
 }
 
 .possible-move-target {
-    cursor: grab;
+	cursor: grab;
+	background-color: #854027;
 }
 
 .last-moved-piece{

@@ -39,6 +39,15 @@ var Checkers;
             }
             pos.setCellValue(this.to, piece);
         };
+        MoveStep.prototype.equals = function (other) {
+            if (other == null)
+                return false;
+            if (!this.from.equals(other.from) || !this.to.equals(other.to))
+                return false;
+            if (this.capturedCell == null)
+                return (other.capturedCell == null);
+            return (this.capturedCell.equals(other.capturedCell));
+        };
         return MoveStep;
     }());
     Checkers.MoveStep = MoveStep;
@@ -61,6 +70,18 @@ var Checkers;
         };
         Move.prototype.isCapturing = function () {
             return (this.lastStep().capturedCell != null);
+        };
+        Move.prototype.startsWith = function (steps) {
+            if (steps == null)
+                return true;
+            var len = steps.length;
+            if (len > this.steps.length)
+                return false;
+            for (var stepIndex = 0; stepIndex < len; ++stepIndex) {
+                if (!this.steps[stepIndex].equals(steps[stepIndex]))
+                    return false;
+            }
+            return true;
         };
         Move.prototype.getLastTargetCell = function () {
             return this.steps[this.steps.length - 1].to;

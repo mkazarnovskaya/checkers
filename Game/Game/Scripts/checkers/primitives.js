@@ -36,6 +36,8 @@ var Checkers;
             return new CellIndex(nextRow, nextCol);
         };
         CellIndex.prototype.equals = function (other) {
+            if (other == null)
+                return false;
             return (this.row == other.row && this.col == other.col);
         };
         return CellIndex;

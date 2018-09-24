@@ -42,7 +42,9 @@
 			return new CellIndex(nextRow, nextCol);
         }
 
-        equals(other: CellIndex): boolean{
+		equals(other: CellIndex): boolean{
+			if (other == null)
+				return false;
             return (this.row == other.row && this.col == other.col);
         }
 	}
