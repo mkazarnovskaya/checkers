@@ -75,11 +75,33 @@
         $(".thinking").show();
         setTimeout(() => {
             let aiMove = this.ai.findBestMove(this.getPositionOnMoveBegin(), this.graphHeight, this.randomFactor);
-            this.lastMove = aiMove;
-            $(".thinking").hide();
-            this.updateDesk();
+			$(".thinking").hide();
+			this.displayAiMove(aiMove);
         }, 500);
-    };
+	};
+
+	this.displayAiMove = function (aiMove, stepIndex = 0) {
+		if (this.currentMove == null) {
+			let pos = this.lastMove.end.copy();
+			let fistStep = aiMove.steps[0];
+			fistStep.apply(pos);
+			this.currentMove = new Checkers.Move([fistStep], pos);
+		}
+		else {
+			this.currentMove.addStep(aiMove.steps[stepIndex]);
+		}
+		++stepIndex;
+		if (stepIndex >= aiMove.steps.length) {
+			this.lastMove = aiMove;
+			this.currentMove = null;
+			this.updateDesk();
+		}
+		else {
+			this.updateDesk();
+			setTimeout(() => this.displayAiMove(aiMove, stepIndex), 500);
+		}
+
+	}
 
     this.updateDesk = function () {
 		let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move", "possible-move-target", "last-moved-piece"];
