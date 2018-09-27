@@ -138,6 +138,8 @@ var Checkers;
         };
         Ai.prototype.estimateNodes = function (nodesToEstimate) {
             var _this = this;
+            if (nodesToEstimate.length == 0)
+                return;
             var positions = nodesToEstimate.map(function (n) { return _this.getPosArray(n.position); });
             var rates = estimate(positions);
             for (var index = 0; index < rates.length; ++index) {
@@ -178,6 +180,8 @@ var Checkers;
                         bestRate = moveRate;
                 }
             }
+            if (bestRate == null)
+                return null;
             //filter moves with rate different from best rate not more than random factor
             var filteredMoves = node.getMoves().filter(function (move) {
                 var moveRate = passedNodes.getMoveRate(move);

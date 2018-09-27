@@ -76,7 +76,10 @@
         setTimeout(() => {
             let aiMove = this.ai.findBestMove(this.getPositionOnMoveBegin(), this.graphHeight, this.randomFactor);
 			$(".thinking").hide();
-			this.displayAiMove(aiMove);
+			if (aiMove != null)
+				this.displayAiMove(aiMove);
+			else
+				$(".win").show();
         }, 500);
 	};
 
@@ -132,7 +135,10 @@
                     cell.addClass("last-moved-piece");
                 }
             }
-        }
+		}
+
+		if (movableCellIndexes.length == 0)
+			$(".loose").show();
     };
 
     this.getCellIndexByCellId = function (cellId) {
@@ -145,7 +151,10 @@
         return $("#" + cellId);
     }
 
-    this.startNewGame =  function (userPlaysBlack) {
+	this.startNewGame = function (userPlaysBlack) {
+		$(".win").hide();
+		$(".loose").hide();
+
         this.lastMove = null;
         this.userPlaysBlack = userPlaysBlack;
         this.updateDesk();

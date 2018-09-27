@@ -156,6 +156,8 @@
 		}
 
 		estimateNodes(nodesToEstimate: Node[]): void {
+			if (nodesToEstimate.length == 0)
+				return;
 			let positions = nodesToEstimate.map(n => this.getPosArray(n.position));
 			let rates = estimate(positions);
 			for (let index = 0; index < rates.length; ++index) {
@@ -198,7 +200,10 @@
                     if ((position.blackPlayer && moveRate < bestRate) || (!position.blackPlayer && moveRate > bestRate))
                         bestRate = moveRate;
                 }
-            }
+			}
+
+			if (bestRate == null)
+				return null;
 
             //filter moves with rate different from best rate not more than random factor
             let filteredMoves = node.getMoves().filter(function (move) {
