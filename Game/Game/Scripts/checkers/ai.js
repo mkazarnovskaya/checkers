@@ -143,7 +143,7 @@ var Checkers;
             var positions = nodesToEstimate.map(function (n) { return _this.getPosArray(n.position); });
             var rates = estimate(positions);
             for (var index = 0; index < rates.length; ++index) {
-                nodesToEstimate[index].setRate(rates[index]);
+                nodesToEstimate[index].setRate(rates[index][0]);
             }
         };
         Ai.prototype.rateGraph = function (node, height, allNodes) {

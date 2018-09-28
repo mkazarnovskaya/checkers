@@ -83,7 +83,7 @@
             return Object.keys(this.nodes).map(nodeHash => this.nodes[nodeHash]);
         }
 
-        getMoveRate(move: Move) {
+		getMoveRate(move: Move): number {
             return this.getNodeByPosition(move.end).rate;
         }
 	}
@@ -161,7 +161,7 @@
 			let positions = nodesToEstimate.map(n => this.getPosArray(n.position));
 			let rates = estimate(positions);
 			for (let index = 0; index < rates.length; ++index) {
-				nodesToEstimate[index].setRate(rates[index]);
+				nodesToEstimate[index].setRate(rates[index][0]);
 			}
 		}
 
