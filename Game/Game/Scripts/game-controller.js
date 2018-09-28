@@ -49,7 +49,7 @@
 		else {
 			let nextStepIndex = this.currentMove.steps.length;
 			var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(this.currentMove.getMoveStartCell())
-				.filter(m = m.startsWith(this.currentMove.steps) && m.steps[nextStepIndex].to.equals(targetCellIndex));
+				.filter(m => m.startsWith(this.currentMove.steps) && m.steps[nextStepIndex].to.equals(targetCellIndex));
 			var step = possibleMoves[0].steps[nextStepIndex];
 			this.currentMove.addStep(step);
 		}
