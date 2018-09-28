@@ -86,7 +86,7 @@
 
 	this.displayAiMove = function (aiMove, stepIndex = 0) {
 		if (this.currentMove == null) {
-			let pos = this.lastMove.end.copy();
+			let pos = this.getPositionOnMoveBegin().copy();
 			let fistStep = aiMove.steps[0];
 			fistStep.apply(pos);
 			this.currentMove = new Checkers.Move([fistStep], pos);
