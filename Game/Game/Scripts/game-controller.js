@@ -1,5 +1,5 @@
 ﻿function GameController(ai) {
-    this.graphHeight = 7;
+    this.graphHeight = 6;
     this.randomFactor = 0.01;
     this.ai = ai;
     this.lastMove = null;
@@ -12,7 +12,7 @@
         gameController.initialPosition.initialize();
 
         $(".black-cell").click(function () {
-			if ($(this).hasClass("contains-movable-piece")) {
+			if ($(this).hasClass("movable-piece")) {
 				gameController.onSelectPieceToMove(this);
             }
 			else if ($(this).hasClass("possible-move-target")) {
@@ -25,8 +25,8 @@
 		$(".selected-for-move").removeClass("selected-for-move");
 		$(".possible-move-target").removeClass("possible-move-target");
 		$(sender).addClass("selected-for-move");
-		var cellIndex = this.getCellIndexByCellId(sender.id);
-		var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(cellIndex);
+		var moveStartIndex = (this.currentMove != null) ? this.currentMove.getMoveStartCell() : this.getCellIndexByCellId(sender.id);
+		var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(moveStartIndex);
 		if (this.currentMove != null)
 			possibleMoves = possibleMoves.filter(m => m.startsWith(this.currentMove.steps));
 		possibleMoves.forEach(function (move) {
@@ -47,9 +47,10 @@
 			this.currentMove = new Checkers.Move([step], pos);
 		}
 		else {
-			var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(this.currentMove.steps[0].from)
-				.filter(m = m.startsWith(this.currentMove.steps) && m.steps[this.currentMove.steps.length].to.equals(targetCellIndex));
-			var step = possibleMoves[0].steps[this.currentMove.steps.length];
+			let nextStepIndex = this.currentMove.steps.length;
+			var possibleMoves = this.getPositionOnMoveBegin().findMovesFromCell(this.currentMove.getMoveStartCell())
+				.filter(m = m.startsWith(this.currentMove.steps) && m.steps[nextStepIndex].to.equals(targetCellIndex));
+			var step = possibleMoves[0].steps[nextStepIndex];
 			this.currentMove.addStep(step);
 		}
 
@@ -107,7 +108,7 @@
 	}
 
     this.updateDesk = function () {
-		let classesToRemove = ["contains-black-simple", "contains-black-king", "contains-white-simple", "contains-white-king", "contains-movable-piece", "selected-for-move", "possible-move-target", "last-moved-piece"];
+		let classesToRemove = ["black-simple", "black-king", "white-simple", "white-king", "movable-piece", "selected-for-move", "possible-move-target", "last-moved-piece"];
 		var movableCellIndexes = (this.currentMove == null) ? this.getPositionOnMoveBegin().findAllMoves().map(m => m.steps[0].from) : [this.currentMove.getLastTargetCell()];
         for (let row = 0; row < 8; ++row) {
             for (let col = 0; col < 4; ++col) {
@@ -120,16 +121,19 @@
 				let cellValue = this.getPositionOnCurrentStep().getCellValue(cellIndex);
 
                 if (cellValue == Checkers.WHITE_SIMPLE)
-                    cell.addClass("contains-white-simple");
+                    cell.addClass("white-simple");
                 else if (cellValue == Checkers.WHITE_KING)
-                    cell.addClass("contains-white-king");
+                    cell.addClass("white-king");
                 else if (cellValue == Checkers.BLACK_SIMPLE)
-                    cell.addClass("contains-black-simple");
+                    cell.addClass("black-simple");
                 else if (cellValue == Checkers.BLACK_KING)
-                    cell.addClass("contains-black-king");
+                    cell.addClass("black-king");
 
+				if (this.currentMove != null && this.currentMove.getLastTargetCell().equals(cellIndex)) {
+					cell.addClass("selected-for-move");
+				}
                 if (movableCellIndexes.some(c => c.equals(cellIndex))) {
-                    cell.addClass("contains-movable-piece");
+                    cell.addClass("movable-piece");
                 }
                 if (this.lastMove != null && this.lastMove.getLastTargetCell().equals(cellIndex)) {
                     cell.addClass("last-moved-piece");

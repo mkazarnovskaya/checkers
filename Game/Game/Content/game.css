@@ -3,27 +3,27 @@
 	background-color: #683725;
 }
 
-.contains-black-simple {
+.black-simple {
 	background-image: url(../Images/black_simple.gif);
 	background-size: 100% auto;
 }
 
-.contains-black-king {
+.black-king {
 	background-image: url(../Images/black_king.gif);
 	background-size: 100% auto;
 }
 
-.contains-white-simple {
+.white-simple {
 	background-image: url(../Images/white_simple.gif);
 	background-size: 100% auto;
 }
 
-.contains-white-king {
+.white-king {
 	background-image: url(../Images/white_king.gif);
 	background-size: 100% auto;
 }
 
-.contains-movable-piece {
+.movable-piece {
 	cursor: grab;
 }
 

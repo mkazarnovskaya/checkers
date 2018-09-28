@@ -83,6 +83,9 @@ var Checkers;
             }
             return true;
         };
+        Move.prototype.getMoveStartCell = function () {
+            return this.steps[0].from;
+        };
         Move.prototype.getLastTargetCell = function () {
             return this.steps[this.steps.length - 1].to;
         };

@@ -101,6 +101,11 @@
 			return true;
 		}
 
+		getMoveStartCell(): CellIndex {
+			return this.steps[0].from;
+		}
+
+
 		getLastTargetCell(): CellIndex {
 			return this.steps[this.steps.length - 1].to;
 		}
