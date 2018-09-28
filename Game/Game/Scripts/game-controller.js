@@ -80,7 +80,7 @@
 			if (aiMove != null)
 				this.displayAiMove(aiMove);
 			else
-				$(".win").show();
+				$(".won").show();
         }, 500);
 	};
 
