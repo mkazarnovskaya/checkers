@@ -24,21 +24,25 @@ function estimate(position) {
 function bmul(bmatrix, matrix) {
 	let rowCnt = bmatrix.rows;
 	let colCnt = matrix.columns;
-	let resultMatrix = new ML.Matrix(rowCnt, colCnt);
+	let resultMatrix = ML.Matrix.zeros(rowCnt, colCnt);
 	let innerCnt = matrix.rows;
 	for (let rowIndex = 0; rowIndex < rowCnt; ++rowIndex) {
-		let bRow = bmatrix.getRow(rowIndex);
-		let newRow = [];
-		for (let colIndex = 0; colIndex < colCnt; ++colIndex)
-			newRow[colIndex] = 0;
+		//let bRow = bmatrix.getRow(rowIndex);
+		//let newRow = [];
+		//for (let colIndex = 0; colIndex < colCnt; ++colIndex)
+		//	newRow[colIndex] = 0;
 
 		for (let inner = 0; inner < innerCnt; ++inner) {
-			if (bRow[inner] != 0) {
-				for (let colIndex = 0; colIndex < colCnt; ++colIndex)
-					newRow[colIndex] += matrix.get(inner, colIndex);
+			if (bmatrix.get(rowIndex, inner) != 0) {
+				for (let colIndex = 0; colIndex < colCnt; ++colIndex) {
+					let value = resultMatrix.get(rowIndex, colIndex);
+					value += matrix.get(inner, colIndex);
+					resultMatrix.set(rowIndex, colIndex, value);
+					//newRow[colIndex] += matrix.get(inner, colIndex);
+				}
 			}
 		}
-		resultMatrix.setRow(rowIndex, newRow);
+		//resultMatrix.setRow(rowIndex, newRow);
 	}
 	return resultMatrix;
 }
