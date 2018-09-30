@@ -19,6 +19,9 @@
     <script type="text/javascript">
         var gameController;
 
+		if (detectIE())
+			alert("Sorry, IE and Endge browsers are not supported");
+
         $(document).ready(function () {
             $.ajax({
                 url: "./TrainedModels/model_12.json",
@@ -32,8 +35,13 @@
                     $("#new_game_black").click(() => gameController.startNewGame(true));
                 }
             });
-        });
-    </script>
+		});
+
+		function detectIE() {
+			var ua = window.navigator.userAgent;
+			return (ua.indexOf('MSIE ') > 0 || ua.indexOf('Trident/') > 0 || ua.indexOf('Edge/') > 0);
+		}
+	</script>
 
 </head>
 <body class="bg-secondary">
