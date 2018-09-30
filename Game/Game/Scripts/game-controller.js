@@ -141,6 +141,9 @@
             }
 		}
 
+		if (this.currentMove != null)
+			this.onSelectPieceToMove($(".selected-for-move").first())
+
 		if (movableCellIndexes.length == 0)
 			$(".loose").show();
     };
