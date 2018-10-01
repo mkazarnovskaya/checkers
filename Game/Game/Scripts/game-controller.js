@@ -144,8 +144,8 @@
 		if (this.currentMove != null)
 			this.onSelectPieceToMove($(".selected-for-move").first())
 
-		if (movableCellIndexes.length == 0)
-			$(".loose").show();
+		if (movableCellIndexes.length == 0 && this.lastMove != null)
+			$(".lost").show();
     };
 
     this.getCellIndexByCellId = function (cellId) {
@@ -159,8 +159,8 @@
     }
 
 	this.startNewGame = function (userPlaysBlack) {
-		$(".win").hide();
-		$(".loose").hide();
+		$(".won").hide();
+		$(".lost").hide();
 
         this.lastMove = null;
         this.userPlaysBlack = userPlaysBlack;
