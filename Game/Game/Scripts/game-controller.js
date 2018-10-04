@@ -80,7 +80,7 @@
 			if (aiMove != null)
 				this.displayAiMove(aiMove);
 			else
-				$(".won").show();
+				this.finishGame(true);
         }, 500);
 	};
 
@@ -144,9 +144,16 @@
 		if (this.currentMove != null)
 			this.onSelectPieceToMove($(".selected-for-move").first())
 
-		if (movableCellIndexes.length == 0 && this.lastMove != null)
+		if (movableCellIndexes.length == 0)
+			this.finishGame(this.getPositionOnMoveBegin().blackPlayer != this.userPlaysBlack);
+	};
+
+	this.finishGame = function (won) {
+		if (won)
+			$(".won").show();
+		else
 			$(".lost").show();
-    };
+	}
 
     this.getCellIndexByCellId = function (cellId) {
         let idParts = cellId.split("_");
