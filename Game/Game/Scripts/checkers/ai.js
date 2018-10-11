@@ -1,3 +1,16 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Checkers;
 (function (Checkers) {
     var Node = /** @class */ (function () {
@@ -16,67 +29,24 @@ var Checkers;
         };
         return Node;
     }());
-    var NodesHash = /** @class */ (function () {
+    var NodesHash = /** @class */ (function (_super) {
+        __extends(NodesHash, _super);
         function NodesHash() {
-            this.nodes = new Object();
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-        NodesHash.prototype.hash = function (position) {
-            var key0 = position.blackPlayer ? "1" : "2";
-            var key1 = 0;
-            var key2 = 0;
-            var key3 = 0;
-            var index = 0;
-            for (var row = 0; row < 8; ++row) {
-                for (var col = 0; col < 4; ++col) {
-                    var cellValue = position.desk[row][col];
-                    if (cellValue == 0)
-                        cellValue = 6;
-                    if (index < 10) {
-                        key1 = ((key1 << 3) | cellValue);
-                    }
-                    else if (index == 10) {
-                        key1 = ((key1 << 2) | (cellValue >> 1));
-                        key2 = (cellValue & 1);
-                    }
-                    else if (index < 21) {
-                        key2 = ((key2 << 3) | cellValue);
-                    }
-                    else if (index == 21) {
-                        key2 = ((key2 << 1) | (cellValue & 1));
-                        key3 = (cellValue >> 1);
-                    }
-                    else {
-                        key3 = ((key3 << 3) | cellValue);
-                    }
-                    ++index;
-                }
-            }
-            return (key0 + "x" + new String(key1) + "x" + new String(key2) + "x" + new String(key3));
-        };
-        NodesHash.prototype.getNodeByPosition = function (position) {
-            var hash = this.hash(position);
-            return this.nodes[hash];
-        };
         NodesHash.prototype.addNode = function (node) {
-            var hash = this.hash(node.position);
-            if (this.nodes[hash])
-                throw new Error("Node was already added.");
-            this.nodes[hash] = node;
-        };
-        NodesHash.prototype.getAllNodes = function () {
-            var _this = this;
-            return Object.keys(this.nodes).map(function (nodeHash) { return _this.nodes[nodeHash]; });
+            return this.addValue(node.position, node);
         };
         NodesHash.prototype.getMoveRate = function (move) {
-            return this.getNodeByPosition(move.end).rate;
+            return this.getValueByPosition(move.end).rate;
         };
         return NodesHash;
-    }());
+    }(Checkers.PositionHash));
     var Ai = /** @class */ (function () {
         function Ai() {
         }
         Ai.prototype.buildGraph = function (position, height, allNodes, nodesToEstimate) {
-            var node = allNodes.getNodeByPosition(position);
+            var node = allNodes.getValueByPosition(position);
             if (node == null) {
                 node = new Node(position);
                 allNodes.addNode(node);
@@ -94,7 +64,7 @@ var Checkers;
                 }
             }
             else {
-                if (nodesToEstimate.getNodeByPosition(node.position) == null) {
+                if (nodesToEstimate.getValueByPosition(node.position) == null) {
                     nodesToEstimate.addNode(node);
                 }
             }
@@ -155,7 +125,7 @@ var Checkers;
             var rate = (node.position.blackPlayer ? 1 : 0);
             for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
                 var move = _a[_i];
-                var nextNode = allNodes.getNodeByPosition(move.end);
+                var nextNode = allNodes.getValueByPosition(move.end);
                 var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
                 if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
                     rate = nextRate;
@@ -167,7 +137,7 @@ var Checkers;
             var passedNodes = new NodesHash();
             var nodesToEstimate = new NodesHash();
             var node = this.buildGraph(position, height, passedNodes, nodesToEstimate);
-            this.estimateNodes(nodesToEstimate.getAllNodes());
+            this.estimateNodes(nodesToEstimate.getAllValues());
             this.rateGraph(node, height, passedNodes);
             var bestRate;
             for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {

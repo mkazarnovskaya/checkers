@@ -1,40 +1,41 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Checkers</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./Content/bootstrap.min.css">
-    <link rel="stylesheet" href="./Content/game.css">
-    <script src="https://www.lactame.com/lib/ml/3.3.0/ml.min.js"></script>
-    <script src="Scripts/checkers/estimate.js" ?></script>
-    <script src="Scripts/jquery-3.0.0.min.js"></script>
-    <script src="Scripts/umd/popper.min.js"></script>
-    <script src="Scripts/bootstrap.min.js"></script>
-    <script src="Scripts/checkers/primitives.js"></script>
-    <script src="Scripts/checkers/position.js"></script>
-    <script src="Scripts/checkers/move.js"></script>
-    <script src="Scripts/checkers/ai.js"></script>
-    <script src="Scripts/game-controller.js"></script>
-    <script type="text/javascript">
-        var gameController;
+	<meta charset="utf-8" />
+	<title>Checkers</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./Content/bootstrap.min.css">
+	<link rel="stylesheet" href="./Content/game.css">
+	<script src="https://www.lactame.com/lib/ml/3.3.0/ml.min.js"></script>
+	<script src="Scripts/checkers/estimate.js" ?></script>
+	<script src="Scripts/jquery-3.0.0.min.js"></script>
+	<script src="Scripts/umd/popper.min.js"></script>
+	<script src="Scripts/bootstrap.min.js"></script>
+	<script src="Scripts/checkers/primitives.js"></script>
+	<script src="Scripts/checkers/position.js"></script>
+	<script src="Scripts/checkers/move.js"></script>
+	<script src="Scripts/checkers/position-hash.js"></script>
+	<script src="Scripts/checkers/ai.js"></script>
+	<script src="Scripts/game-controller.js"></script>
+	<script type="text/javascript">
+		var gameController;
 
 		if (detectIE())
 			alert("Sorry, IE and Endge browsers are not supported. The game will not wotk properly.");
 
-        $(document).ready(function () {
-            $.ajax({
-                url: "./TrainedModels/model_12.json",
-                success: function (data) {
-                    _model_weights = data;
-                    var ai = new Checkers.Ai();
-                    gameController = new GameController(ai);
-                    gameController.startNewGame(false);
+		$(document).ready(function () {
+			$.ajax({
+				url: "./TrainedModels/model_12.json",
+				success: function (data) {
+					_model_weights = data;
+					var ai = new Checkers.Ai();
+					gameController = new GameController(ai);
+					gameController.startNewGame(false);
 
-                    $("#new_game_white").click(() => gameController.startNewGame(false));
-                    $("#new_game_black").click(() => gameController.startNewGame(true));
-                }
-            });
+					$("#new_game_white").click(() => gameController.startNewGame(false));
+					$("#new_game_black").click(() => gameController.startNewGame(true));
+				}
+			});
 		});
 
 		function detectIE() {

@@ -23,74 +23,20 @@
         }
 	}
 
-	class NodesHash {
-		nodes: Object;
+	class NodesHash extends PositionHash<Node> {
 
-		constructor() {
-			this.nodes = new Object();
-		}
-
-		hash(position: Position): string {
-			let key0 = position.blackPlayer ? "1" : "2";
-			let key1 = 0;
-			let key2 = 0;
-			let key3 = 0;
-
-			let index = 0;
-			for (let row = 0; row < 8; ++row) {
-				for (let col = 0; col < 4; ++col) {
-					let cellValue = position.desk[row][col];
-					if (cellValue == 0)
-						cellValue = 0b110;
-					if (index < 10) {
-						key1 = ((key1 << 3) | cellValue);
-					}
-					else if (index == 10) {
-						key1 = ((key1 << 2) | (cellValue >> 1));
-						key2 = (cellValue & 1);
-					}
-					else if (index < 21) {
-						key2 = ((key2 << 3) | cellValue);
-					}
-					else if (index == 21) {
-						key2 = ((key2 << 1) | (cellValue & 1));
-						key3 = (cellValue >> 1);
-					}
-					else {
-						key3 = ((key3 << 3) | cellValue);
-					}
-
-					++index;
-				}
-			}
-			return (key0 + "x" + new String(key1) + "x" + new String(key2) + "x" + new String(key3));
-		}
-
-
-		getNodeByPosition(position: Position): Node {
-			let hash = this.hash(position);
-			return this.nodes[hash];
-		}
-
-		addNode(node:Node): void {
-			let hash = this.hash(node.position);
-            if (this.nodes[hash])
-                throw new Error("Node was already added.")
-			this.nodes[hash] = node;
-        }
-
-        getAllNodes(): Node[] {
-            return Object.keys(this.nodes).map(nodeHash => this.nodes[nodeHash]);
+		addNode(node: Node): void {
+			return this.addValue(node.position, node);
         }
 
 		getMoveRate(move: Move): number {
-            return this.getNodeByPosition(move.end).rate;
+            return this.getValueByPosition(move.end).rate;
         }
 	}
 
 	export class Ai {
         buildGraph(position: Position, height: number, allNodes: NodesHash, nodesToEstimate: NodesHash):Node {
-            var node = allNodes.getNodeByPosition(position);
+			var node = allNodes.getValueByPosition(position);
             if (node == null) {
                 node = new Node(position);
                 allNodes.addNode(node);
@@ -107,7 +53,7 @@
                 }
             }
             else {
-                if (nodesToEstimate.getNodeByPosition(node.position) == null) {
+				if (nodesToEstimate.getValueByPosition(node.position) == null) {
                     nodesToEstimate.addNode(node);
                 }
             }
@@ -174,7 +120,7 @@
 
 			let rate = (node.position.blackPlayer ? 1 : 0);
             for (let move of node.getMoves()) {
-                let nextNode = allNodes.getNodeByPosition(move.end);
+				let nextNode = allNodes.getValueByPosition(move.end);
 				var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
 				if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
 					rate = nextRate;
@@ -188,7 +134,7 @@
 			let passedNodes = new NodesHash();
             let nodesToEstimate = new NodesHash();
 			let node = this.buildGraph(position, height, passedNodes, nodesToEstimate);
-			this.estimateNodes(nodesToEstimate.getAllNodes());
+			this.estimateNodes(nodesToEstimate.getAllValues());
 			this.rateGraph(node, height,passedNodes);
 
             let bestRate: number;
