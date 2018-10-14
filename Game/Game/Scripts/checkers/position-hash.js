@@ -37,7 +37,7 @@ var Checkers;
             }
             return (key0 + "x" + new String(key1) + "x" + new String(key2) + "x" + new String(key3));
         };
-        PositionHash.prototype.getValueByPosition = function (position) {
+        PositionHash.prototype.getValue = function (position) {
             var hash = this.hash(position);
             return this.hashObject[hash];
         };
@@ -45,6 +45,10 @@ var Checkers;
             var hash = this.hash(position);
             if (this.hashObject[hash])
                 throw new Error("Value was already added for this posion.");
+            this.hashObject[hash] = value;
+        };
+        PositionHash.prototype.setValue = function (position, value) {
+            var hash = this.hash(position);
             this.hashObject[hash] = value;
         };
         PositionHash.prototype.getAllValues = function () {

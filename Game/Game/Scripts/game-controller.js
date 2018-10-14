@@ -1,10 +1,12 @@
 ﻿function GameController(ai) {
     this.graphHeight = 6;
-    this.randomFactor = 0.01;
+    this.randomFactor = 0.02;
     this.ai = ai;
     this.lastMove = null;
 	this.initialPosition = new Checkers.Position();
 	this.currentMove = null;
+	this.positionCounts = new Checkers.PositionHash();
+	this.drawCheckers = [new Checkers.PositionRepeatDrawChecker(), new Checkers.ThreeKingsDrawChecker()];
 
     initialize(this);
 
@@ -60,8 +62,10 @@
 			this.currentMove = null;
 		}
 		this.updateDesk();
-		if (this.currentMove == null)
-			this.makeAiMove();
+		if (this.currentMove == null) {
+			if (this.verifyLastMove())
+				this.makeAiMove();
+		}
 	}
 
     this.getPositionOnMoveBegin = function () {
@@ -77,14 +81,11 @@
         setTimeout(() => {
             let aiMove = this.ai.findBestMove(this.getPositionOnMoveBegin(), this.graphHeight, this.randomFactor);
 			$(".thinking").hide();
-			if (aiMove != null)
-				this.displayAiMove(aiMove);
-			else
-				this.finishGame(true);
+			this.processAiMove(aiMove);
         }, 500);
 	};
 
-	this.displayAiMove = function (aiMove, stepIndex = 0) {
+	this.processAiMove = function (aiMove, stepIndex = 0) {
 		if (this.currentMove == null) {
 			let pos = this.getPositionOnMoveBegin().copy();
 			let fistStep = aiMove.steps[0];
@@ -99,10 +100,11 @@
 			this.lastMove = aiMove;
 			this.currentMove = null;
 			this.updateDesk();
+			this.verifyLastMove();
 		}
 		else {
 			this.updateDesk();
-			setTimeout(() => this.displayAiMove(aiMove, stepIndex), 500);
+			setTimeout(() => this.processAiMove(aiMove, stepIndex), 500);
 		}
 
 	}
@@ -143,17 +145,36 @@
 
 		if (this.currentMove != null)
 			this.onSelectPieceToMove($(".selected-for-move").first())
-
-		if (movableCellIndexes.length == 0)
-			this.finishGame(this.getPositionOnMoveBegin().blackPlayer != this.userPlaysBlack);
 	};
 
-	this.finishGame = function (won) {
-		if (won)
-			$(".won").show();
-		else
-			$(".lost").show();
-	}
+	this.verifyLastMove = function () {
+		var pos = this.lastMove.end;
+
+		//check for win/loose
+		if (pos.findAllMoves().length == 0) {
+			if (pos.blackPlayer == this.userPlaysBlack)
+				$(".lost").show();
+			else
+				$(".won").show();
+			return false;
+		}
+
+		//check for draw
+		for (let drawCheckerIndex = 0; drawCheckerIndex < this.drawCheckers.length; ++drawCheckerIndex) {
+			let checker = this.drawCheckers[drawCheckerIndex];
+			if (checker.check(pos, this.positionCounts)) {
+				$(".draw-reason").text(checker.getDescription());
+				$(".draw").show();
+				return false;
+			}
+		}
+
+		var prevPosCount = this.positionCounts.getValue(pos);
+		if (prevPosCount == null)
+			prevPosCount = 0;
+		this.positionCounts.setValue(pos, prevPosCount + 1);
+		return true;
+	};
 
     this.getCellIndexByCellId = function (cellId) {
         let idParts = cellId.split("_");
@@ -170,7 +191,12 @@
 		$(".lost").hide();
 
         this.lastMove = null;
-        this.userPlaysBlack = userPlaysBlack;
+		this.userPlaysBlack = userPlaysBlack;
+		this.positionCounts = new Checkers.PositionHash();
+		this.drawCheckers.forEach(function (checker) {
+			checker.reset();
+		});
+
         this.updateDesk();
 
         if (this.userPlaysBlack) {

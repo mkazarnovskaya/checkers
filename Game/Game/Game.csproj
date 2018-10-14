@@ -151,8 +151,11 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\checkers\ai.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\draw\three-kings-draw-checker.ts" />
     <TypeScriptCompile Include="Scripts\checkers\move.ts" />
     <TypeScriptCompile Include="Scripts\checkers\position-hash.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\draw\draw-checker-interface.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\draw\postion-repeat-draw-checker.ts" />
     <TypeScriptCompile Include="Scripts\index.d.ts" />
     <TypeScriptCompile Include="Scripts\checkers\primitives.ts" />
     <TypeScriptCompile Include="Scripts\checkers\position.ts" />

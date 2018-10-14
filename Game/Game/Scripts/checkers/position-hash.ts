@@ -43,7 +43,7 @@
 		}
 
 
-		getValueByPosition(position: Position): T {
+		getValue(position: Position): T {
 			let hash = this.hash(position);
 			return this.hashObject[hash];
 		}
@@ -52,6 +52,11 @@
 			let hash = this.hash(position);
 			if (this.hashObject[hash])
 				throw new Error("Value was already added for this posion.")
+			this.hashObject[hash] = value;
+		}
+
+		setValue(position: Position, value: T): void {
+			let hash = this.hash(position);
 			this.hashObject[hash] = value;
 		}
 

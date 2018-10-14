@@ -16,6 +16,8 @@
 	<script src="Scripts/checkers/move.js"></script>
 	<script src="Scripts/checkers/position-hash.js"></script>
 	<script src="Scripts/checkers/ai.js"></script>
+	<script src="Scripts/checkers/draw/postion-repeat-draw-checker.js"></script>
+	<script src="Scripts/checkers/draw/three-kings-draw-checker.js"></script>
 	<script src="Scripts/game-controller.js"></script>
 	<script type="text/javascript">
 		var gameController;
@@ -49,6 +51,7 @@
 	<div class="thinking" style="display:none">I'm thinking ...</div>
 	<div class="won" style="display:none">Game won!</div>
 	<div class="lost" style="display:none">Game lost!</div>
+	<div class="draw" style="display:none">Draw!<br /> <div class="draw-reason"></div></div>
 	<nav class="navbar navbar-expand bg-dark navbar-dark small">
 		<ul class="navbar-nav">
 			<li class="nav-item active">

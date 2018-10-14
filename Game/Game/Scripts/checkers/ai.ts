@@ -30,13 +30,13 @@
         }
 
 		getMoveRate(move: Move): number {
-            return this.getValueByPosition(move.end).rate;
+            return this.getValue(move.end).rate;
         }
 	}
 
 	export class Ai {
         buildGraph(position: Position, height: number, allNodes: NodesHash, nodesToEstimate: NodesHash):Node {
-			var node = allNodes.getValueByPosition(position);
+			var node = allNodes.getValue(position);
             if (node == null) {
                 node = new Node(position);
                 allNodes.addNode(node);
@@ -53,7 +53,7 @@
                 }
             }
             else {
-				if (nodesToEstimate.getValueByPosition(node.position) == null) {
+				if (nodesToEstimate.getValue(node.position) == null) {
                     nodesToEstimate.addNode(node);
                 }
             }
@@ -120,7 +120,7 @@
 
 			let rate = (node.position.blackPlayer ? 1 : 0);
             for (let move of node.getMoves()) {
-				let nextNode = allNodes.getValueByPosition(move.end);
+				let nextNode = allNodes.getValue(move.end);
 				var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
 				if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
 					rate = nextRate;

@@ -38,7 +38,7 @@ var Checkers;
             return this.addValue(node.position, node);
         };
         NodesHash.prototype.getMoveRate = function (move) {
-            return this.getValueByPosition(move.end).rate;
+            return this.getValue(move.end).rate;
         };
         return NodesHash;
     }(Checkers.PositionHash));
@@ -46,7 +46,7 @@ var Checkers;
         function Ai() {
         }
         Ai.prototype.buildGraph = function (position, height, allNodes, nodesToEstimate) {
-            var node = allNodes.getValueByPosition(position);
+            var node = allNodes.getValue(position);
             if (node == null) {
                 node = new Node(position);
                 allNodes.addNode(node);
@@ -64,7 +64,7 @@ var Checkers;
                 }
             }
             else {
-                if (nodesToEstimate.getValueByPosition(node.position) == null) {
+                if (nodesToEstimate.getValue(node.position) == null) {
                     nodesToEstimate.addNode(node);
                 }
             }
@@ -125,7 +125,7 @@ var Checkers;
             var rate = (node.position.blackPlayer ? 1 : 0);
             for (var _i = 0, _a = node.getMoves(); _i < _a.length; _i++) {
                 var move = _a[_i];
-                var nextNode = allNodes.getValueByPosition(move.end);
+                var nextNode = allNodes.getValue(move.end);
                 var nextRate = this.rateGraph(nextNode, height - 1, allNodes);
                 if ((node.position.blackPlayer && rate > nextRate) || (!node.position.blackPlayer && rate < nextRate))
                     rate = nextRate;
