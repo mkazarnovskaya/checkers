@@ -189,6 +189,7 @@
 	this.startNewGame = function (userPlaysBlack) {
 		$(".won").hide();
 		$(".lost").hide();
+		$(".draw").hide();
 
         this.lastMove = null;
 		this.userPlaysBlack = userPlaysBlack;
