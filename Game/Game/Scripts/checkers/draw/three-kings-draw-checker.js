@@ -9,9 +9,9 @@ var Checkers;
             this.counter = null;
         };
         ThreeKingsDrawChecker.prototype.getDescription = function () {
-            return "The player having three kings (or more) against a single enemy king coudn't capture enemy king within 15 moves.";
+            return "The player having three kings (or more) against a single enemy king and his 15th move coudn't capture enemy king.";
         };
-        ThreeKingsDrawChecker.prototype.check = function (pos, postionCounts) {
+        ThreeKingsDrawChecker.prototype.check = function (lastMove, postionCounts) {
             if (this.counter != null) {
                 ++this.counter;
                 if (this.counter >= this.maxCount)
@@ -19,6 +19,7 @@ var Checkers;
                 return false;
             }
             else {
+                var pos = lastMove.end;
                 var enemySimpleCount = 0;
                 var enemyKingCount = 0;
                 var mySimpleCount = 0;

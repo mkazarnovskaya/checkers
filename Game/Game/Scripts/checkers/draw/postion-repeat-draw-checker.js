@@ -8,7 +8,8 @@ var Checkers;
         PositionRepeatDrawChecker.prototype.getDescription = function () {
             return "The same position repeats itself for the third time.";
         };
-        PositionRepeatDrawChecker.prototype.check = function (pos, postionCounts) {
+        PositionRepeatDrawChecker.prototype.check = function (lastMove, postionCounts) {
+            var pos = lastMove.end;
             return (postionCounts.getValue(pos) >= 3);
         };
         return PositionRepeatDrawChecker;

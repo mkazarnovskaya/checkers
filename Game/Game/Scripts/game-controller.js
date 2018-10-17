@@ -6,7 +6,7 @@
 	this.initialPosition = new Checkers.Position();
 	this.currentMove = null;
 	this.positionCounts = new Checkers.PositionHash();
-	this.drawCheckers = [new Checkers.PositionRepeatDrawChecker(), new Checkers.ThreeKingsDrawChecker()];
+	this.drawCheckers = [new Checkers.PositionRepeatDrawChecker(), new Checkers.ThreeKingsDrawChecker(), new Checkers.KingMovesOnlyDrawChecker()];
 
     initialize(this);
 
@@ -162,7 +162,7 @@
 		//check for draw
 		for (let drawCheckerIndex = 0; drawCheckerIndex < this.drawCheckers.length; ++drawCheckerIndex) {
 			let checker = this.drawCheckers[drawCheckerIndex];
-			if (checker.check(pos, this.positionCounts)) {
+			if (checker.check(this.lastMove, this.positionCounts)) {
 				$(".draw-reason").text(checker.getDescription());
 				$(".draw").show();
 				return false;

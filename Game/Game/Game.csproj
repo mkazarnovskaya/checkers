@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\checkers\ai.ts" />
+    <TypeScriptCompile Include="Scripts\checkers\draw\king-moves-only-draw-checker.ts" />
     <TypeScriptCompile Include="Scripts\checkers\draw\three-kings-draw-checker.ts" />
     <TypeScriptCompile Include="Scripts\checkers\move.ts" />
     <TypeScriptCompile Include="Scripts\checkers\position-hash.ts" />

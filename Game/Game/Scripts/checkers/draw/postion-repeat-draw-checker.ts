@@ -7,7 +7,8 @@
 			return "The same position repeats itself for the third time.";
 		}
 
-		check(pos: Position, postionCounts: PositionHash<number>): boolean {
+		check(lastMove: Move, postionCounts: PositionHash<number>): boolean {
+			var pos = lastMove.end;
 			return (postionCounts.getValue(pos) >= 3);
 		}
 	}

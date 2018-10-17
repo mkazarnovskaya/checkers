@@ -16,7 +16,7 @@
 			return "The player having three kings (or more) against a single enemy king and his 15th move coudn't capture enemy king.";
 		}
 
-		check(pos: Position, postionCounts: PositionHash<number>): boolean {
+		check(lastMove: Move, postionCounts: PositionHash<number>): boolean {
 			if (this.counter != null) {
 				++this.counter;
 				if (this.counter >= this.maxCount)
@@ -24,6 +24,7 @@
 				return false;
 			}
 			else {
+				var pos = lastMove.end;
 				let enemySimpleCount = 0;
 				let enemyKingCount = 0;
 				let mySimpleCount = 0;
