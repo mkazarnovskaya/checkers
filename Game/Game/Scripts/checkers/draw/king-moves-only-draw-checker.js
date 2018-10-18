@@ -15,16 +15,29 @@ var Checkers;
         };
         KingMovesOnlyDrawChecker.prototype.check = function (lastMove, postionCounts) {
             var pos = lastMove.end;
+            var conditionBroken = false;
             var newTotalKingCount = this.getTotalKingCount(pos);
             if (newTotalKingCount != this.totalKingCount) {
                 this.totalKingCount = newTotalKingCount;
+                //number of kings changed
+                conditionBroken = true;
             }
             else {
-                var targetCellValue = pos.getCellValue(lastMove.getLastTargetCell());
-                if ((targetCellValue & Checkers.CellValue.King) == 0) {
-                    this.counter = null;
-                    return false;
+                if (lastMove.isCapturing()) {
+                    //the current move is capturing
+                    conditionBroken = true;
                 }
+                else {
+                    var targetCellValue = pos.getCellValue(lastMove.getLastTargetCell());
+                    if ((targetCellValue & Checkers.CellValue.King) == 0) {
+                        //moving piece is not king
+                        conditionBroken = true;
+                    }
+                }
+            }
+            if (conditionBroken) {
+                this.counter = null;
+                return false;
             }
             if (this.counter == null)
                 this.counter = 0;

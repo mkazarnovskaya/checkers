@@ -21,17 +21,31 @@
 
 		check(lastMove: Move, postionCounts: PositionHash<number>): boolean {
 			var pos = lastMove.end;
+			let conditionBroken = false;
 			var newTotalKingCount = this.getTotalKingCount(pos);
 			if (newTotalKingCount != this.totalKingCount) {
 				this.totalKingCount = newTotalKingCount;
+				//number of kings changed
+				conditionBroken = true;
 			}
 			else {
-				let targetCellValue = pos.getCellValue(lastMove.getLastTargetCell());
-				if ((targetCellValue & CellValue.King) == 0) {
-					this.counter = null;
-					return false;
+				if (lastMove.isCapturing()) {
+					//the current move is capturing
+					conditionBroken = true;
+				}
+				else {
+					let targetCellValue = pos.getCellValue(lastMove.getLastTargetCell());
+					if ((targetCellValue & CellValue.King) == 0) {
+						//moving piece is not king
+						conditionBroken = true;
+					}
 				}
 			}
+			if (conditionBroken) {
+				this.counter = null;
+				return false;
+			}
+
 			if (this.counter == null)
 				this.counter = 0;
 			else
