@@ -4,7 +4,7 @@
 		}
 
 		getDescription(): string {
-			return "The same position repeats itself for the third time.";
+			return "The same position was repeated three times.";
 		}
 
 		check(lastMove: Move, postionCounts: PositionHash<number>): boolean {
