@@ -1,3 +1,3 @@
 # checkers
 Russian checkers
-Deployed at https://checkersr.azurewebsites.net/
+Deployed at http://checkers.us-west-2.elasticbeanstalk.com/game.html
